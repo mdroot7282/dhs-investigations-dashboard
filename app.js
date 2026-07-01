@@ -1,54 +1,55 @@
-// Initialize the map
+// Initialize map
 const map = L.map("map", {
     minZoom: CONFIG.map.minZoom,
     maxZoom: CONFIG.map.maxZoom
 }).setView(CONFIG.map.center, CONFIG.map.zoom);
 
-// Add OpenStreetMap tiles
+// Base map
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap contributors"
 }).addTo(map);
 
 // Load facility data
 fetch("facilities.json")
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Unable to load facilities.json");
+        }
+        return response.json();
+    })
     .then(facilities => {
 
         const bounds = L.latLngBounds();
 
-        let totalAllegations = 0;
-        let totalOpened = 0;
-        let totalActive = 0;
-        let totalCharged = 0;
+        let allegations = 0;
+        let opened = 0;
+        let active = 0;
+        let charged = 0;
 
         facilities.forEach(facility => {
 
-            totalAllegations += Number(facility.allegations || 0);
-            totalOpened += Number(facility.opened || 0);
-            totalActive += Number(facility.active || 0);
-            totalCharged += Number(facility.charged || 0);
+            allegations += Number(facility.allegations || 0);
+            opened += Number(facility.opened || 0);
+            active += Number(facility.active || 0);
+            charged += Number(facility.charged || 0);
 
             const marker = L.marker([facility.lat, facility.lng]).addTo(map);
 
             marker.bindPopup(`
                 <strong>${facility.name}</strong><br>
-                ${facility.city}<br><br>
-
-                <b>Allegations:</b> ${facility.allegations}<br>
-                <b>Cases Opened:</b> ${facility.opened}<br>
-                <b>Active Cases:</b> ${facility.active}<br>
-                <b>Cases Charged:</b> ${facility.charged}<br>
-                <b>Case Type:</b> ${facility.caseType || "N/A"}<br>
-                <b>Notes:</b> ${facility.notes || "None"}<br>
-                <b>Updated:</b> ${facility.updated || "N/A"}
+                ${facility.city}
             `);
 
             marker.on("click", () => {
 
                 document.getElementById("details").innerHTML = `
-                    <h3>${facility.name}</h3>
+                    <h2>${facility.name}</h2>
+
+                    <p><strong>Address:</strong> ${facility.address}</p>
 
                     <p><strong>City:</strong> ${facility.city}</p>
+
+                    <hr>
 
                     <p><strong>Allegations:</strong> ${facility.allegations}</p>
 
@@ -62,7 +63,7 @@ fetch("facilities.json")
 
                     <p><strong>Notes:</strong> ${facility.notes || "None"}</p>
 
-                    <p><strong>Last Updated:</strong> ${facility.updated || "N/A"}</p>
+                    <p><strong>Updated:</strong> ${facility.updated || "N/A"}</p>
                 `;
             });
 
@@ -75,10 +76,10 @@ fetch("facilities.json")
         });
 
         document.getElementById("facilityCount").textContent = facilities.length;
-        document.getElementById("totalAllegations").textContent = totalAllegations;
-        document.getElementById("totalOpened").textContent = totalOpened;
-        document.getElementById("totalActive").textContent = totalActive;
-        document.getElementById("totalCharged").textContent = totalCharged;
+        document.getElementById("totalAllegations").textContent = allegations;
+        document.getElementById("totalOpened").textContent = opened;
+        document.getElementById("totalActive").textContent = active;
+        document.getElementById("totalCharged").textContent = charged;
 
         document.getElementById("facilityFooter").textContent = facilities.length;
         document.getElementById("lastRefresh").textContent =
@@ -86,5 +87,6 @@ fetch("facilities.json")
 
     })
     .catch(error => {
-        console.error("Error loading facilities:", error);
+        console.error(error);
+        alert("Unable to load facility data.");
     });
