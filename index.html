@@ -2,133 +2,83 @@
 <html lang="en">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>DII DHS Statistics Dashboard</title>
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DII DHS Investigative Statistics Dashboard</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <header id="header">
+        <div class="brand">
+            <div class="brandLine">Illinois State Police</div>
+            <div class="brandLine">Division of Internal Investigation</div>
+        </div>
+        <h1>DHS Investigative Statistics Dashboard</h1>
+    </header>
 
-<header>
+    <section id="kpiRow">
+        <div class="kpiCard">
+            <div class="kpiTitle">Total Allegations</div>
+            <div class="kpiValue" id="totalAllegations">0</div>
+        </div>
+        <div class="kpiCard">
+            <div class="kpiTitle">Total Cases Opened</div>
+            <div class="kpiValue" id="totalOpened">0</div>
+        </div>
+        <div class="kpiCard">
+            <div class="kpiTitle">Battery Cases</div>
+            <div class="kpiValue" id="batteryCases">0</div>
+        </div>
+        <div class="kpiCard">
+            <div class="kpiTitle">Sexual Misconduct Cases</div>
+            <div class="kpiValue" id="sexualMisconductCases">0</div>
+        </div>
+        <div class="kpiCard">
+            <div class="kpiTitle">Convictions</div>
+            <div class="kpiValue" id="convictions">0</div>
+        </div>
+        <div class="kpiCard">
+            <div class="kpiTitle">Active Cases</div>
+            <div class="kpiValue" id="activeCases">0</div>
+        </div>
+    </section>
 
-<h1>Illinois State Police</h1>
+    <section id="mainGrid">
+        <section id="mapPanel">
+            <div id="map"></div>
+            <div id="legend">
+                <h4>Legend</h4>
+                <div><span class="legendSwatch green"></span>0 Active Cases</div>
+                <div><span class="legendSwatch yellow"></span>1–2 Active Cases</div>
+                <div><span class="legendSwatch orange"></span>3–5 Active Cases</div>
+                <div><span class="legendSwatch red"></span>6+ Active Cases</div>
+            </div>
+        </section>
 
-<h2>Division of Internal Investigation</h2>
+        <aside id="detailsPanel">
+            <h2>Facility Information</h2>
+            <div id="details">
+                Select a facility on the map to view details here.
+            </div>
+        </aside>
+    </section>
 
-<h3>DHS Investigative Statistics Dashboard</h3>
+    <footer>
+        <div class="footerItem">
+            <span class="footerLabel">Last Refresh:</span>
+            <span id="lastRefresh">--</span>
+        </div>
+        <div class="footerItem">
+            <span class="footerLabel">DHS Facilities:</span>
+            <span id="facilityFooter">0</span>
+        </div>
+    </footer>
 
-</header>
-
-<div id="kpiRow">
-
-<div class="kpiCard">
-
-<div class="kpiTitle">Facilities</div>
-
-<div class="kpiValue" id="facilityCount">0</div>
-
-</div>
-
-<div class="kpiCard">
-
-<div class="kpiTitle">Allegations</div>
-
-<div class="kpiValue" id="totalAllegations">0</div>
-
-</div>
-
-<div class="kpiCard">
-
-<div class="kpiTitle">Opened</div>
-
-<div class="kpiValue" id="totalOpened">0</div>
-
-</div>
-
-<div class="kpiCard">
-
-<div class="kpiTitle">Active</div>
-
-<div class="kpiValue" id="totalActive">0</div>
-
-</div>
-
-<div class="kpiCard">
-
-<div class="kpiTitle">Charged</div>
-
-<div class="kpiValue" id="totalCharged">0</div>
-
-</div>
-
-</div>
-
-<div id="mainGrid">
-
-<div id="mapCard">
-
-<div id="map"></div>
-
-</div>
-
-<div id="detailsCard">
-
-<h2>Facility Statistics</h2>
-
-<div id="details">
-
-Click a facility marker.
-
-</div>
-
-</div>
-
-</div>
-
-<footer>
-
-<div>
-
-Last Refresh
-
-<span id="lastRefresh">
-
---
-
-</span>
-
-</div>
-
-<div>
-
-DHS Facilities
-
-<span id="facilityFooter">
-
-15
-
-</span>
-
-</div>
-
-</footer>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<script src="config.js"></script>
-
-<script src="data.js"></script>
-
-<script src="app.js"></script>
-
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="config.js"></script>
+    <script src="app.js"></script>
 </body>
 
 </html>

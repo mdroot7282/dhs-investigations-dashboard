@@ -1,262 +1,255 @@
-/* ===========================
-   DII COMMAND CENTER
-   =========================== */
+:root {
+    color-scheme: light;
+    --bg: #f5f7fb;
+    --panel: #ffffff;
+    --panel-border: #d7dbe5;
+    --text: #14213d;
+    --muted: #5f6f88;
+    --accent: #003a70;
+    --accent-soft: #e5eef9;
+    --success: #2e7d32;
+    --warning: #f9a825;
+    --alert: #ef6c00;
+    --danger: #c62828;
+}
 
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
 }
 
-html,
 body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+body, button, input, textarea {
+    font: inherit;
+}
+
+header#header {
+    padding: 1.5rem 1.5rem 0.75rem;
+    background: linear-gradient(180deg, var(--accent) 0%, rgba(0, 58, 112, 0.9) 100%);
+    color: #ffffff;
+    text-align: left;
+}
+
+header#header .brand {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    letter-spacing: 0.04em;
+    opacity: 0.9;
+}
+
+header#header h1 {
+    margin: 0;
+    font-size: clamp(1.75rem, 2.2vw, 2.4rem);
+    line-height: 1.05;
+}
+
+#kpiRow {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+.kpiCard {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 16px;
+    padding: 1.2rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.kpiTitle {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 0.85rem;
+}
+
+.kpiValue {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+#mainGrid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    padding: 0 1.5rem 1.5rem;
+}
+
+#mapPanel {
+    position: relative;
+    min-height: 640px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 1px 5px rgba(15, 23, 42, 0.06);
+}
+
+#map {
+    width: 100%;
     height: 100%;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: #edf1f5;
-    color: #222;
+    min-height: 640px;
 }
 
-/* ===========================
-   HEADER
-   =========================== */
-
-header {
-    background: #003a70;
-    color: white;
-    padding: 18px 30px;
-    box-shadow: 0 3px 10px rgba(0,0,0,.25);
+#legend {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    background: rgba(255, 255, 255, 0.93);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 12px;
+    padding: 1rem 1rem 0.8rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+    width: min(280px, calc(100% - 2rem));
 }
 
-header h1 {
-    font-size: 30px;
+#legend h4 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    letter-spacing: 0.01em;
 }
 
-header h2 {
-    font-size: 18px;
-    font-weight: 400;
-    margin-top: 4px;
+#legend div {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--text);
+    margin-bottom: 0.5rem;
 }
 
-header h3 {
-    color: #ffd100;
-    margin-top: 6px;
-    font-size: 20px;
+.legendSwatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid rgba(15, 23, 42, 0.12);
 }
 
-/* ===========================
-   KPI CARDS
-   =========================== */
+.legendSwatch.green { background: var(--success); }
+.legendSwatch.yellow { background: var(--warning); }
+.legendSwatch.orange { background: var(--alert); }
+.legendSwatch.red { background: var(--danger); }
 
-#kpiRow{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:15px;
-    padding:20px;
+#detailsPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 5px rgba(15, 23, 42, 0.06);
+    min-height: 640px;
 }
 
-.kpiCard{
-    background:white;
-    border-radius:12px;
-    padding:18px;
-    text-align:center;
-    box-shadow:0 4px 12px rgba(0,0,0,.12);
+#detailsPanel h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.3rem;
 }
 
-.kpiTitle{
-    font-size:14px;
-    color:#666;
-    text-transform:uppercase;
+#details {
+    display: grid;
+    gap: 0.75rem;
+    color: var(--text);
 }
 
-.kpiValue{
-    margin-top:10px;
-    font-size:34px;
-    font-weight:bold;
-    color:#003a70;
+.detailsRow {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    align-items: start;
 }
 
-/* ===========================
-   MAIN GRID
-   =========================== */
-
-#mainGrid{
-
-    height:calc(100vh - 250px);
-
-    display:grid;
-
-    grid-template-columns: 2fr 420px;
-
-    gap:20px;
-
-    padding:0 20px 20px 20px;
-
+.detailsLabel {
+    color: var(--muted);
+    font-size: 0.95rem;
+    min-width: 140px;
 }
 
-/* ===========================
-   MAP
-   =========================== */
-
-#mapCard{
-
-    background:white;
-
-    border-radius:12px;
-
-    overflow:hidden;
-
-    box-shadow:0 4px 12px rgba(0,0,0,.12);
-
+.detailsRow span:last-child {
+    font-weight: 600;
+    word-break: break-word;
 }
 
-#map{
-
-    height:100%;
-
-    width:100%;
-
+.detailsIntro {
+    padding: 1rem;
+    background: var(--accent-soft);
+    border-radius: 14px;
+    color: var(--text);
+    border: 1px solid rgba(0, 58, 112, 0.08);
 }
 
-/* ===========================
-   DETAILS
-   =========================== */
-
-#detailsCard{
-
-    background:white;
-
-    border-radius:12px;
-
-    padding:25px;
-
-    overflow:auto;
-
-    box-shadow:0 4px 12px rgba(0,0,0,.12);
-
+footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem 1.5rem;
+    color: var(--muted);
 }
 
-#detailsCard h2{
-
-    color:#003a70;
-
-    margin-bottom:20px;
-
+.footerItem {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
 }
 
-.detailRow{
-
-    margin-bottom:15px;
-
+.footerLabel {
+    font-weight: 600;
+    color: var(--text);
 }
 
-.detailLabel{
-
-    font-weight:bold;
-
-    color:#555;
-
+.popupTitle {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
 }
 
-.detailValue{
-
-    margin-top:4px;
-
+.error {
+    color: var(--danger);
 }
 
-/* ===========================
-   FOOTER
-   =========================== */
+@media (max-width: 1200px) {
+    #kpiRow {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 
-footer{
+    #mainGrid {
+        grid-template-columns: 1fr;
+    }
 
-    background:#003a70;
-
-    color:white;
-
-    display:flex;
-
-    justify-content:space-around;
-
-    padding:15px;
-
-    margin-top:15px;
-
+    #detailsPanel {
+        min-height: auto;
+    }
 }
 
-footer div{
+@media (max-width: 760px) {
+    header#header {
+        padding: 1rem;
+    }
 
-    text-align:center;
+    #kpiRow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 1rem;
+    }
 
-}
+    #mainGrid {
+        padding: 0 1rem 1rem;
+    }
 
-footer span{
-
-    display:block;
-
-    font-size:24px;
-
-    color:#ffd100;
-
-    font-weight:bold;
-
-}
-
-/* ===========================
-   LEAFLET
-   =========================== */
-
-.leaflet-popup-content{
-
-    font-size:14px;
-
-}
-
-.leaflet-tooltip{
-
-    font-size:13px;
-
-}
-
-/* ===========================
-   RESPONSIVE
-   =========================== */
-
-@media(max-width:1200px){
-
-#mainGrid{
-
-grid-template-columns:1fr;
-
-height:auto;
-
-}
-
-#detailsCard{
-
-height:450px;
-
-}
-
-#kpiRow{
-
-grid-template-columns:repeat(2,1fr);
-
-}
-
-}
-
-@media(max-width:700px){
-
-#kpiRow{
-
-grid-template-columns:1fr;
-
-}
-
-header h1{
-
-font-size:24px;
-
-}
-
+    footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
