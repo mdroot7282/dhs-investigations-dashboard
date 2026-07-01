@@ -1,0 +1,262 @@
+/* ===========================
+   DII COMMAND CENTER
+   =========================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #edf1f5;
+    color: #222;
+}
+
+/* ===========================
+   HEADER
+   =========================== */
+
+header {
+    background: #003a70;
+    color: white;
+    padding: 18px 30px;
+    box-shadow: 0 3px 10px rgba(0,0,0,.25);
+}
+
+header h1 {
+    font-size: 30px;
+}
+
+header h2 {
+    font-size: 18px;
+    font-weight: 400;
+    margin-top: 4px;
+}
+
+header h3 {
+    color: #ffd100;
+    margin-top: 6px;
+    font-size: 20px;
+}
+
+/* ===========================
+   KPI CARDS
+   =========================== */
+
+#kpiRow{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:15px;
+    padding:20px;
+}
+
+.kpiCard{
+    background:white;
+    border-radius:12px;
+    padding:18px;
+    text-align:center;
+    box-shadow:0 4px 12px rgba(0,0,0,.12);
+}
+
+.kpiTitle{
+    font-size:14px;
+    color:#666;
+    text-transform:uppercase;
+}
+
+.kpiValue{
+    margin-top:10px;
+    font-size:34px;
+    font-weight:bold;
+    color:#003a70;
+}
+
+/* ===========================
+   MAIN GRID
+   =========================== */
+
+#mainGrid{
+
+    height:calc(100vh - 250px);
+
+    display:grid;
+
+    grid-template-columns: 2fr 420px;
+
+    gap:20px;
+
+    padding:0 20px 20px 20px;
+
+}
+
+/* ===========================
+   MAP
+   =========================== */
+
+#mapCard{
+
+    background:white;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.12);
+
+}
+
+#map{
+
+    height:100%;
+
+    width:100%;
+
+}
+
+/* ===========================
+   DETAILS
+   =========================== */
+
+#detailsCard{
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:25px;
+
+    overflow:auto;
+
+    box-shadow:0 4px 12px rgba(0,0,0,.12);
+
+}
+
+#detailsCard h2{
+
+    color:#003a70;
+
+    margin-bottom:20px;
+
+}
+
+.detailRow{
+
+    margin-bottom:15px;
+
+}
+
+.detailLabel{
+
+    font-weight:bold;
+
+    color:#555;
+
+}
+
+.detailValue{
+
+    margin-top:4px;
+
+}
+
+/* ===========================
+   FOOTER
+   =========================== */
+
+footer{
+
+    background:#003a70;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:space-around;
+
+    padding:15px;
+
+    margin-top:15px;
+
+}
+
+footer div{
+
+    text-align:center;
+
+}
+
+footer span{
+
+    display:block;
+
+    font-size:24px;
+
+    color:#ffd100;
+
+    font-weight:bold;
+
+}
+
+/* ===========================
+   LEAFLET
+   =========================== */
+
+.leaflet-popup-content{
+
+    font-size:14px;
+
+}
+
+.leaflet-tooltip{
+
+    font-size:13px;
+
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+
+@media(max-width:1200px){
+
+#mainGrid{
+
+grid-template-columns:1fr;
+
+height:auto;
+
+}
+
+#detailsCard{
+
+height:450px;
+
+}
+
+#kpiRow{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+}
+
+@media(max-width:700px){
+
+#kpiRow{
+
+grid-template-columns:1fr;
+
+}
+
+header h1{
+
+font-size:24px;
+
+}
+
+}
