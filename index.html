@@ -1,90 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DHS Investigative Activity Dashboard</title>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<meta charset="UTF-8">
 
-    <link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DII DHS Statistics Dashboard</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <header>
-    <h1>Illinois State Police</h1>
-    <h2>Division of Internal Investigation</h2>
-    <h3>DHS Investigative Activity Dashboard</h3>
+
+<h1>Illinois State Police</h1>
+
+<h2>Division of Internal Investigation</h2>
+
+<h3>DHS Investigative Statistics Dashboard</h3>
+
 </header>
 
-<div id="dashboard">
+<div id="kpiRow">
 
-    <aside id="leftPanel">
-        <h2>Search</h2>
+<div class="kpiCard">
 
-        <input
-            type="text"
-            id="search"
-            placeholder="Search facility...">
+<div class="kpiTitle">Facilities</div>
 
-    </aside>
+<div class="kpiValue" id="facilityCount">0</div>
 
-    <main id="map"></main>
+</div>
 
-    <aside id="rightPanel">
+<div class="kpiCard">
 
-        <h2>Facility Details</h2>
+<div class="kpiTitle">Allegations</div>
 
-        <div id="details">
+<div class="kpiValue" id="totalAllegations">0</div>
 
-            Select a facility...
+</div>
 
-        </div>
+<div class="kpiCard">
 
-    </aside>
+<div class="kpiTitle">Opened</div>
+
+<div class="kpiValue" id="totalOpened">0</div>
+
+</div>
+
+<div class="kpiCard">
+
+<div class="kpiTitle">Active</div>
+
+<div class="kpiValue" id="totalActive">0</div>
+
+</div>
+
+<div class="kpiCard">
+
+<div class="kpiTitle">Charged</div>
+
+<div class="kpiValue" id="totalCharged">0</div>
+
+</div>
+
+</div>
+
+<div id="mainGrid">
+
+<div id="mapCard">
+
+<div id="map"></div>
+
+</div>
+
+<div id="detailsCard">
+
+<h2>Facility Statistics</h2>
+
+<div id="details">
+
+Click a facility marker.
+
+</div>
+
+</div>
 
 </div>
 
 <footer>
 
-<div class="stat">
+<div>
 
-Facilities
+Last Refresh
 
-<span id="facilityCount">0</span>
+<span id="lastRefresh">
 
-</div>
+--
 
-<div class="stat">
-
-Allegations
-
-<span id="totalAllegations">0</span>
+</span>
 
 </div>
 
-<div class="stat">
+<div>
 
-Opened
+DHS Facilities
 
-<span id="totalOpened">0</span>
+<span id="facilityFooter">
 
-</div>
+15
 
-<div class="stat">
-
-Active
-
-<span id="totalActive">0</span>
-
-</div>
-
-<div class="stat">
-
-Charged
-
-<span id="totalCharged">0</span>
+</span>
 
 </div>
 
@@ -92,9 +123,12 @@ Charged
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+<script src="config.js"></script>
+
 <script src="data.js"></script>
 
 <script src="app.js"></script>
 
 </body>
+
 </html>
