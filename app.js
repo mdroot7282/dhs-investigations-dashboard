@@ -1,66 +1,90 @@
-const map = L.map("map").setView([40.1,-89.2],7);
+// Initialize the map
+const map = L.map("map", {
+    minZoom: CONFIG.map.minZoom,
+    maxZoom: CONFIG.map.maxZoom
+}).setView(CONFIG.map.center, CONFIG.map.zoom);
 
-L.tileLayer(
-"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-{
-attribution:"© OpenStreetMap",
-maxZoom:18
-}
-).addTo(map);
+// Add OpenStreetMap tiles
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "&copy; OpenStreetMap contributors"
+}).addTo(map);
 
-let totalAllegations=0;
-let totalOpened=0;
-let totalActive=0;
-let totalCharged=0;
+// Load facility data
+fetch("facilities.json")
+    .then(response => response.json())
+    .then(facilities => {
 
-facilities.forEach(f=>{
+        const bounds = L.latLngBounds();
 
-const marker=L.circleMarker(
-[f.lat,f.lng],
-{
-radius:8,
-color:"#003A70",
-fillColor:"#FFD100",
-fillOpacity:0.9,
-weight:2
-}
-).addTo(map);
+        let totalAllegations = 0;
+        let totalOpened = 0;
+        let totalActive = 0;
+        let totalCharged = 0;
 
-marker.bindTooltip(
-`<b>${f.name}</b><br>
-Allegations: ${f.allegations}`,
-{
-direction:"top"
-}
-);
+        facilities.forEach(facility => {
 
-marker.on("click",()=>{
+            totalAllegations += Number(facility.allegations || 0);
+            totalOpened += Number(facility.opened || 0);
+            totalActive += Number(facility.active || 0);
+            totalCharged += Number(facility.charged || 0);
 
-document.getElementById("details").innerHTML=`
-<h2>${f.name}</h2>
+            const marker = L.marker([facility.lat, facility.lng]).addTo(map);
 
-<p><b>Allegations:</b> ${f.allegations}</p>
+            marker.bindPopup(`
+                <strong>${facility.name}</strong><br>
+                ${facility.city}<br><br>
 
-<p><b>Cases Opened:</b> ${f.opened}</p>
+                <b>Allegations:</b> ${facility.allegations}<br>
+                <b>Cases Opened:</b> ${facility.opened}<br>
+                <b>Active Cases:</b> ${facility.active}<br>
+                <b>Cases Charged:</b> ${facility.charged}<br>
+                <b>Case Type:</b> ${facility.caseType || "N/A"}<br>
+                <b>Notes:</b> ${facility.notes || "None"}<br>
+                <b>Updated:</b> ${facility.updated || "N/A"}
+            `);
 
-<p><b>Active Cases:</b> ${f.active}</p>
+            marker.on("click", () => {
 
-<p><b>Cases Charged:</b> ${f.charged}</p>
+                document.getElementById("details").innerHTML = `
+                    <h3>${facility.name}</h3>
 
-<p><b>Case Type:</b> ${f.type}</p>
-`;
+                    <p><strong>City:</strong> ${facility.city}</p>
 
-});
+                    <p><strong>Allegations:</strong> ${facility.allegations}</p>
 
-totalAllegations+=Number(f.allegations||0);
-totalOpened+=Number(f.opened||0);
-totalActive+=Number(f.active||0);
-totalCharged+=Number(f.charged||0);
+                    <p><strong>Cases Opened:</strong> ${facility.opened}</p>
 
-});
+                    <p><strong>Active Cases:</strong> ${facility.active}</p>
 
-document.getElementById("facilityCount").innerText=facilities.length;
-document.getElementById("totalAllegations").innerText=totalAllegations;
-document.getElementById("totalOpened").innerText=totalOpened;
-document.getElementById("totalActive").innerText=totalActive;
-document.getElementById("totalCharged").innerText=totalCharged;
+                    <p><strong>Cases Charged:</strong> ${facility.charged}</p>
+
+                    <p><strong>Case Type:</strong> ${facility.caseType || "N/A"}</p>
+
+                    <p><strong>Notes:</strong> ${facility.notes || "None"}</p>
+
+                    <p><strong>Last Updated:</strong> ${facility.updated || "N/A"}</p>
+                `;
+            });
+
+            bounds.extend([facility.lat, facility.lng]);
+
+        });
+
+        map.fitBounds(bounds, {
+            padding: [40, 40]
+        });
+
+        document.getElementById("facilityCount").textContent = facilities.length;
+        document.getElementById("totalAllegations").textContent = totalAllegations;
+        document.getElementById("totalOpened").textContent = totalOpened;
+        document.getElementById("totalActive").textContent = totalActive;
+        document.getElementById("totalCharged").textContent = totalCharged;
+
+        document.getElementById("facilityFooter").textContent = facilities.length;
+        document.getElementById("lastRefresh").textContent =
+            new Date().toLocaleDateString();
+
+    })
+    .catch(error => {
+        console.error("Error loading facilities:", error);
+    });
