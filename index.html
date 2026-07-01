@@ -1,1 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DHS Investigative Activity Dashboard</title>
 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <h1>Illinois State Police</h1>
+    <h2>Division of Internal Investigation</h2>
+    <h3>DHS Investigative Activity Dashboard</h3>
+</header>
+
+<div id="dashboard">
+
+    <aside id="leftPanel">
+        <h2>Search</h2>
+
+        <input
+            type="text"
+            id="search"
+            placeholder="Search facility...">
+
+    </aside>
+
+    <main id="map"></main>
+
+    <aside id="rightPanel">
+
+        <h2>Facility Details</h2>
+
+        <div id="details">
+
+            Select a facility...
+
+        </div>
+
+    </aside>
+
+</div>
+
+<footer>
+
+<div class="stat">
+
+Facilities
+
+<span id="facilityCount">0</span>
+
+</div>
+
+<div class="stat">
+
+Allegations
+
+<span id="totalAllegations">0</span>
+
+</div>
+
+<div class="stat">
+
+Opened
+
+<span id="totalOpened">0</span>
+
+</div>
+
+<div class="stat">
+
+Active
+
+<span id="totalActive">0</span>
+
+</div>
+
+<div class="stat">
+
+Charged
+
+<span id="totalCharged">0</span>
+
+</div>
+
+</footer>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script src="data.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+</html>
