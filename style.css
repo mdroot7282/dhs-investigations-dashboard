@@ -106,45 +106,54 @@ header#header {
     min-height: 0;
 }
 
-.mapSearchContainer {
+.mapToolbar {
     position: relative;
     padding: 1rem 1rem 0;
     background: var(--panel);
 }
 
+.searchBox {
+    position: relative;
+    width: 350px;
+    max-width: 100%;
+}
+
 .mapSearchInput {
     width: 100%;
-    border: 1px solid var(--panel-border);
+    border: 1px solid #d7dce5;
     border-radius: 999px;
-    padding: 0.9rem 1rem 0.9rem 2.8rem;
-    background: var(--panel);
+    padding: 14px 46px 14px 16px;
+    background: #ffffff;
     color: var(--text);
-    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+    font: inherit;
 }
 
 .mapSearchInput:focus {
-    outline: 2px solid rgba(0, 58, 112, 0.2);
+    outline: none;
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 58, 112, 0.15);
 }
 
-.mapSearchContainer::before {
-    content: "🔎";
+.searchBoxIcon {
     position: absolute;
-    left: 1.7rem;
+    right: 16px;
     top: 50%;
     transform: translateY(-50%);
     color: var(--muted);
     pointer-events: none;
+    font-size: 0.95rem;
 }
 
 .searchResults {
     position: absolute;
     top: calc(100% + 0.35rem);
     left: 1rem;
-    right: 1rem;
+    width: 350px;
+    max-width: calc(100% - 2rem);
     z-index: 1000;
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
+    background: #ffffff;
+    border: 1px solid #d7dce5;
     border-radius: 14px;
     box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
     display: none;
@@ -181,6 +190,12 @@ header#header {
 .searchResultMeta {
     font-size: 0.9rem;
     color: var(--muted);
+}
+
+.searchResultEmpty {
+    padding: 0.8rem 1rem;
+    color: var(--muted);
+    font-size: 0.95rem;
 }
 
 #legend {

@@ -18,7 +18,7 @@ const lastRefreshEl = document.getElementById("lastRefresh");
 const facilityFooterEl = document.getElementById("facilityFooter");
 const searchInputEl = document.getElementById("facilitySearchInput");
 const searchResultsEl = document.getElementById("facilitySearchResults");
-const searchContainerEl = document.getElementById("facilitySearchContainer");
+const searchToolbarEl = document.getElementById("mapToolbar");
 const kpiElements = {
     totalAllegations: document.getElementById("totalAllegations"),
     totalOpened: document.getElementById("totalOpened"),
@@ -80,6 +80,7 @@ function getPopupHtml(facility) {
 
 let facilitiesData = [];
 let selectedMarker = null;
+let highlightTimer = null;
 const facilityMarkers = new Map();
 
 function updateKpis(facilities) {
@@ -161,6 +162,11 @@ function addFacilityMarkers(facilities) {
 }
 
 function resetSelectedMarker() {
+    if (highlightTimer) {
+        window.clearTimeout(highlightTimer);
+        highlightTimer = null;
+    }
+
     if (selectedMarker) {
         selectedMarker.setStyle(selectedMarker.defaultStyle);
         selectedMarker = null;
@@ -198,6 +204,13 @@ function selectFacility(facility, options = {}) {
     if (options.openPopup !== false) {
         marker.openPopup();
     }
+
+    highlightTimer = window.setTimeout(() => {
+        if (selectedMarker === marker) {
+            marker.setStyle(marker.defaultStyle);
+            selectedMarker = null;
+        }
+    }, 700);
 }
 
 function updateDetails(facility) {
@@ -213,7 +226,11 @@ function renderSearchResults(matches) {
     searchResultsEl.innerHTML = "";
 
     if (!matches.length) {
-        hideSearchResults();
+        searchResultsEl.classList.add("visible");
+        const emptyState = document.createElement("div");
+        emptyState.className = "searchResultEmpty";
+        emptyState.textContent = "No facilities found";
+        searchResultsEl.appendChild(emptyState);
         return;
     }
 
@@ -238,7 +255,7 @@ function renderSearchResults(matches) {
         resultButton.appendChild(titleEl);
         resultButton.appendChild(metaEl);
         resultButton.addEventListener("click", () => {
-            selectFacility(facility);
+            selectFacility(facility, { flyTo: true, openPopup: true });
             searchInputEl.value = facility.Title;
             hideSearchResults();
         });
@@ -268,12 +285,13 @@ function handleSearchKeydown(event) {
 }
 
 searchInputEl.addEventListener("input", handleSearchInput);
+searchInputEl.addEventListener("focus", handleSearchInput);
 searchInputEl.addEventListener("keydown", handleSearchKeydown);
-searchContainerEl.addEventListener("click", (event) => {
+searchToolbarEl.addEventListener("click", (event) => {
     event.stopPropagation();
 });
 document.addEventListener("click", (event) => {
-    if (!searchContainerEl.contains(event.target)) {
+    if (!searchToolbarEl.contains(event.target)) {
         hideSearchResults();
     }
 });

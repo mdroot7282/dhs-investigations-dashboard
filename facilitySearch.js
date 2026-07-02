@@ -1,5 +1,5 @@
 function normalizeSearchText(value) {
-  return String(value || '').trim().toLowerCase();
+  return String(value || "").trim().toLowerCase();
 }
 
 function filterFacilityMatches(facilities, query) {
@@ -10,12 +10,17 @@ function filterFacilityMatches(facilities, query) {
   }
 
   return facilities.filter((facility) => {
-    const title = facility && facility.Title ? String(facility.Title) : '';
+    const title = facility && facility.Title ? String(facility.Title) : "";
     return normalizeSearchText(title).includes(normalizedQuery);
   });
 }
 
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof window !== "undefined") {
+  window.filterFacilityMatches = filterFacilityMatches;
+  window.normalizeSearchText = normalizeSearchText;
+}
+
+if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     normalizeSearchText,
     filterFacilityMatches
