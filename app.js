@@ -265,7 +265,27 @@ function renderSearchResults(matches) {
 
     searchResultsEl.appendChild(fragment);
 }
+function filterFacilityMatches(facilities, query) {
 
+    const search = query.trim().toLowerCase();
+
+    if (!search) {
+        return [];
+    }
+
+    return facilities.filter(facility => {
+
+        const title = (facility.Title || "").toLowerCase();
+        const city = (facility.City || "").toLowerCase();
+
+        return (
+            title.includes(search) ||
+            city.includes(search)
+        );
+
+    });
+
+}
 function handleSearchInput() {
     const query = searchInputEl.value;
 
