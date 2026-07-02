@@ -16,6 +16,9 @@ const bounds = L.latLngBounds();
 const detailsEl = document.getElementById("details");
 const lastRefreshEl = document.getElementById("lastRefresh");
 const facilityFooterEl = document.getElementById("facilityFooter");
+const searchInputEl = document.getElementById("facilitySearchInput");
+const searchResultsEl = document.getElementById("facilitySearchResults");
+const searchContainerEl = document.getElementById("facilitySearchContainer");
 const kpiElements = {
     totalAllegations: document.getElementById("totalAllegations"),
     totalOpened: document.getElementById("totalOpened"),
@@ -75,6 +78,10 @@ function getPopupHtml(facility) {
     `;
 }
 
+let facilitiesData = [];
+let selectedMarker = null;
+const facilityMarkers = new Map();
+
 function updateKpis(facilities) {
     const totals = facilities.reduce((acc, facility) => {
         acc.totalAllegations += parseNumber(facility["Total Allegations"]);
@@ -126,15 +133,25 @@ function addFacilityMarkers(facilities) {
             fillOpacity: 0.85
         }).addTo(map);
 
+        marker.defaultStyle = {
+            radius: 10,
+            fillColor: color,
+            color: "#333",
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.85
+        };
+
         marker.bindPopup(getPopupHtml(facility), {
             minWidth: 240,
             maxWidth: 320
         });
 
         marker.on("click", () => {
-            updateDetails(facility);
+            selectFacility(facility, { flyTo: false, openPopup: true });
         });
 
+        facilityMarkers.set(facility.Title, marker);
         bounds.extend([latitude, longitude]);
     });
 
@@ -143,9 +160,123 @@ function addFacilityMarkers(facilities) {
     }
 }
 
+function resetSelectedMarker() {
+    if (selectedMarker) {
+        selectedMarker.setStyle(selectedMarker.defaultStyle);
+        selectedMarker = null;
+    }
+}
+
+function selectFacility(facility, options = {}) {
+    const marker = facilityMarkers.get(facility.Title);
+
+    if (!marker) {
+        return;
+    }
+
+    resetSelectedMarker();
+
+    const latitude = parseNumber(facility.Latitude);
+    const longitude = parseNumber(facility.Longitude);
+
+    marker.setStyle({
+        radius: 13,
+        fillColor: marker.defaultStyle.fillColor,
+        color: "#14213d",
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 1
+    });
+    marker.bringToFront();
+    selectedMarker = marker;
+    updateDetails(facility);
+
+    if (options.flyTo !== false && latitude && longitude) {
+        map.flyTo([latitude, longitude], 11, { duration: 1.2 });
+    }
+
+    if (options.openPopup !== false) {
+        marker.openPopup();
+    }
+}
+
 function updateDetails(facility) {
     detailsEl.innerHTML = formatFacilityInfo(facility);
 }
+
+function hideSearchResults() {
+    searchResultsEl.innerHTML = "";
+    searchResultsEl.classList.remove("visible");
+}
+
+function renderSearchResults(matches) {
+    searchResultsEl.innerHTML = "";
+
+    if (!matches.length) {
+        hideSearchResults();
+        return;
+    }
+
+    searchResultsEl.classList.add("visible");
+
+    const fragment = document.createDocumentFragment();
+    matches.slice(0, 8).forEach((facility) => {
+        const resultButton = document.createElement("button");
+        resultButton.type = "button";
+        resultButton.className = "searchResultItem";
+        resultButton.setAttribute("role", "option");
+        resultButton.dataset.facilityTitle = facility.Title;
+
+        const titleEl = document.createElement("span");
+        titleEl.className = "searchResultTitle";
+        titleEl.textContent = facility.Title;
+
+        const metaEl = document.createElement("span");
+        metaEl.className = "searchResultMeta";
+        metaEl.textContent = facility.City;
+
+        resultButton.appendChild(titleEl);
+        resultButton.appendChild(metaEl);
+        resultButton.addEventListener("click", () => {
+            selectFacility(facility);
+            searchInputEl.value = facility.Title;
+            hideSearchResults();
+        });
+
+        fragment.appendChild(resultButton);
+    });
+
+    searchResultsEl.appendChild(fragment);
+}
+
+function handleSearchInput() {
+    const query = searchInputEl.value;
+
+    if (!query.trim()) {
+        hideSearchResults();
+        return;
+    }
+
+    const matches = filterFacilityMatches(facilitiesData, query);
+    renderSearchResults(matches);
+}
+
+function handleSearchKeydown(event) {
+    if (event.key === "Escape") {
+        hideSearchResults();
+    }
+}
+
+searchInputEl.addEventListener("input", handleSearchInput);
+searchInputEl.addEventListener("keydown", handleSearchKeydown);
+searchContainerEl.addEventListener("click", (event) => {
+    event.stopPropagation();
+});
+document.addEventListener("click", (event) => {
+    if (!searchContainerEl.contains(event.target)) {
+        hideSearchResults();
+    }
+});
 
 function showInitialMessage() {
     detailsEl.innerHTML = `
@@ -167,10 +298,10 @@ fetch("facilities.json")
             throw new Error("Unexpected facility data format.");
         }
 
-        const facilities = data;
-        updateKpis(facilities);
-        addFacilityMarkers(facilities);
-        updateFooter(facilities.length);
+        facilitiesData = data;
+        updateKpis(facilitiesData);
+        addFacilityMarkers(facilitiesData);
+        updateFooter(facilitiesData.length);
         showInitialMessage();
     })
     .catch((error) => {

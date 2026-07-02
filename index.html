@@ -48,6 +48,10 @@
 
     <section id="mainGrid">
         <section id="mapPanel">
+            <div id="facilitySearchContainer" class="mapSearchContainer">
+                <input id="facilitySearchInput" class="mapSearchInput" type="text" placeholder="Search for a facility..." autocomplete="off" aria-label="Search facilities" />
+                <div id="facilitySearchResults" class="searchResults" role="listbox" aria-label="Facility search results"></div>
+            </div>
             <div id="map"></div>
             <div id="legend">
                 <h4>Legend</h4>
@@ -79,6 +83,7 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="config.js"></script>
+    <script src="facilitySearch.js"></script>
     <script src="app.js"></script>
 </body>
 
