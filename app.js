@@ -480,20 +480,20 @@ fetch("facilities.json")
         return document.body.classList.contains('presentation-mode');
     }
 
-    function updatePresentationButton() {
+    function updatePresentationModeButton() {
         if (!presentationButton) return;
         const isActive = document.body.classList.contains('presentation-mode');
         presentationButton.setAttribute('aria-pressed', isActive ? 'true' : 'false');
         const label = presentationButton.querySelector('.controlLabel');
         if (label) {
-            label.textContent = 'Presentation Mode';
+            label.textContent = isActive ? 'Exit Presentation Mode' : 'Presentation Mode';
         }
         presentationButton.title = isActive ? 'Exit presentation mode' : 'Presentation Mode';
     }
 
     function exitPresentationMode() {
         document.body.classList.remove('presentation-mode');
-        updatePresentationButton();
+        updatePresentationModeButton();
         try {
             localStorage.removeItem(PRESENTATION_KEY);
         } catch (e) {}
@@ -517,7 +517,7 @@ fetch("facilities.json")
             localStorage.setItem(PRESENTATION_KEY, 'true');
         } catch (e) {}
         document.body.classList.add('presentation-mode');
-        updatePresentationButton();
+        updatePresentationModeButton();
         const element = document.documentElement;
         const requestFn = element.requestFullscreen || element.webkitRequestFullscreen || element.mozRequestFullScreen || element.msRequestFullscreen;
         if (requestFn) requestFn.call(element).catch(() => {});
@@ -553,7 +553,7 @@ fetch("facilities.json")
         }
     } catch (e) {}
 
-    updatePresentationButton();
+    updatePresentationModeButton();
 
     // respond to OS-level changes if user hasn't explicitly set a preference
     if (window.matchMedia) {
