@@ -19,6 +19,19 @@ const facilityFooterEl = document.getElementById("facilityFooter");
 const searchInputEl = document.getElementById("facilitySearchInput");
 const searchResultsEl = document.getElementById("facilitySearchResults");
 const searchToolbarEl = document.getElementById("mapToolbar");
+const resetViewButton = document.getElementById("resetViewButton");
+const initialMapState = {
+    center: CONFIG.map.center,
+    zoom: CONFIG.map.zoom
+};
+
+if (resetViewButton) {
+    resetViewButton.addEventListener("click", () => {
+        map.setView(initialMapState.center, initialMapState.zoom);
+        resetSelectedMarker();
+    });
+}
+
 const kpiElements = {
     totalAllegations: document.getElementById("totalAllegations"),
     totalOpened: document.getElementById("totalOpened"),
@@ -114,6 +127,10 @@ function updateFooter(facilityCount) {
     lastRefreshEl.textContent = new Date().toLocaleString();
 }
 
+function updateFacilityCount(facilityCount) {
+    facilityFooterEl.textContent = facilityCount.toLocaleString();
+}
+
 function addFacilityMarkers(facilities) {
     facilities.forEach((facility) => {
         const latitude = parseNumber(facility.Latitude);
@@ -144,12 +161,16 @@ function addFacilityMarkers(facilities) {
         };
 
         marker.bindPopup(getPopupHtml(facility), {
-            minWidth: 240,
-            maxWidth: 320
-        });
+    minWidth: 240,
+    maxWidth: 320,
+    autoPan: true,
+    keepInView: true,
+    autoPanPaddingTopLeft: [20, 180],
+    autoPanPaddingBottomRight: [20, 20]
+});
 
         marker.on("click", () => {
-            selectFacility(facility, { flyTo: false, openPopup: true });
+            selectFacility(facility, { flyTo: true, openPopup: true });
         });
 
         facilityMarkers.set(facility.Title, marker);
@@ -198,7 +219,10 @@ function selectFacility(facility, options = {}) {
     updateDetails(facility);
 
     if (options.flyTo !== false && latitude && longitude) {
-        map.flyTo([latitude, longitude], 11, { duration: 1.2 });
+        map.setView([latitude, longitude], map.getZoom(), {
+            animate: true,
+            duration: 0.45
+        });
     }
 
     if (options.openPopup !== false) {
@@ -310,6 +334,7 @@ searchInputEl.addEventListener("keydown", handleSearchKeydown);
 searchToolbarEl.addEventListener("click", (event) => {
     event.stopPropagation();
 });
+
 document.addEventListener("click", (event) => {
     if (!searchToolbarEl.contains(event.target)) {
         hideSearchResults();
