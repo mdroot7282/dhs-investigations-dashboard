@@ -27,8 +27,13 @@ const initialMapState = {
 
 if (resetViewButton) {
     resetViewButton.addEventListener("click", () => {
-        map.setView(initialMapState.center, initialMapState.zoom);
+        // Fully clear selection/UI first, then reset map view
+        map.closePopup();
         resetSelectedMarker();
+        searchInputEl.value = "";
+        hideSearchResults();
+        showInitialMessage();
+        map.setView(initialMapState.center, initialMapState.zoom);
     });
 }
 
@@ -93,6 +98,7 @@ function getPopupHtml(facility) {
 
 let facilitiesData = [];
 let selectedMarker = null;
+let selectedFacility = null;
 let highlightTimer = null;
 const facilityMarkers = new Map();
 
@@ -192,6 +198,12 @@ function resetSelectedMarker() {
         selectedMarker.setStyle(selectedMarker.defaultStyle);
         selectedMarker = null;
     }
+    // Clear selected facility reference and ensure no popups/search remain
+    selectedFacility = null;
+    map.closePopup();
+    searchInputEl.value = "";
+    hideSearchResults();
+    showInitialMessage();
 }
 
 function selectFacility(facility, options = {}) {
@@ -202,6 +214,9 @@ function selectFacility(facility, options = {}) {
     }
 
     resetSelectedMarker();
+
+    // Track which facility is selected so Reset View can fully clear it
+    selectedFacility = facility;
 
     const latitude = parseNumber(facility.Latitude);
     const longitude = parseNumber(facility.Longitude);
