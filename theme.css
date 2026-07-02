@@ -1,0 +1,112 @@
+/* Theme system overrides and variables (loaded after style.css)
+   Implements light/dark themes via body.light-theme / body.dark-theme
+   Provides CSS variables and overrides for components to avoid changing original stylesheet.
+*/
+:root {
+    --bg: #f5f7fb;
+    --panel: #ffffff;
+    --panel-border: #d7dbe5;
+    --text: #14213d;
+    --muted: #5f6f88;
+    --accent: #0B3A63;
+    --accent-strong: #003a70;
+    --accent-soft: #e5eef9;
+    --success: #2e7d32;
+    --warning: #f9a825;
+    --alert: #ef8720;
+    --danger: #c62828;
+    --header-bg: var(--accent);
+    --header-text: #ffffff;
+    --header-border: #D4AF37;
+    --map-bg: #f2f4f8;
+    --transition-duration: 250ms;
+    --transition-easing: ease;
+}
+
+body.dark-theme {
+    --bg: #0b1220;
+    --panel: #0f1724;
+    --panel-border: #132033;
+    --text: #e6eef8;
+    --muted: #9aa7bf;
+    --accent: #1e6fbf;
+    --accent-strong: #0b3a63;
+    --accent-soft: rgba(30,111,191,0.08);
+    --success: #4caf50;
+    --warning: #ffb74d;
+    --alert: #ff9800;
+    --danger: #ef5350;
+    --header-bg: #071226;
+    --header-text: #ffffff;
+    --header-border: #8b6b2f;
+    --map-bg: #071226;
+}
+
+/* Theme toggle button */
+.themeToggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--header-text);
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 12px;
+}
+
+/* show sun on light, moon on dark */
+.icon-moon { display: none; }
+body.dark-theme .icon-moon { display: inline; }
+body.dark-theme .icon-sun { display: none; }
+
+/* Focus styles */
+.themeToggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(11,58,99,0.18);
+}
+
+/* Apply variables to the most important selectors to override hard-coded colors in style.css */
+header#header { background: var(--header-bg) !important; color: var(--header-text) !important; border-bottom-color: var(--header-border) !important; }
+.kpiCard { background: var(--panel) !important; border-color: var(--panel-border) !important; }
+.kpiTitle { color: var(--muted) !important; }
+.kpiValue { color: var(--accent-strong) !important; }
+#mapPanel, #detailsPanel, .mapToolbar, .searchResults, #legend, .detailsRow { background: var(--panel) !important; border-color: var(--panel-border) !important; }
+#map { background: var(--map-bg) !important; }
+.leaflet-popup-content-wrapper { background: var(--panel) !important; border-color: rgba(11,58,99,0.12) !important; }
+.leaflet-popup-content { color: var(--text) !important; }
+.leaflet-popup-content .popupTitle { color: var(--accent-strong) !important; }
+.leaflet-popup-close-button { color: var(--accent-strong) !important; }
+.leaflet-control-zoom a { background: var(--panel) !important; color: var(--accent-strong) !important; }
+.mapResetButton { background: var(--accent) !important; color: var(--header-text) !important; }
+.searchBoxIcon { color: var(--muted) !important; }
+.searchResultItem:hover, .searchResultItem:focus-visible { background: var(--accent-soft) !important; }
+.searchResultTitle { color: var(--text) !important; }
+.searchResultMeta { color: var(--muted) !important; }
+.detailsLabel { color: var(--muted) !important; }
+.detailsRow span:last-child { color: var(--accent-strong) !important; }
+#legend h4 { color: var(--accent-strong) !important; }
+.legendSwatch.green { background: var(--success) !important; }
+.legendSwatch.yellow { background: var(--warning) !important; }
+.legendSwatch.orange { background: var(--alert) !important; }
+.legendSwatch.red { background: var(--danger) !important; }
+
+/* Smooth transitions for theme changes */
+:root, body, header, .kpiCard, #mapPanel, #detailsPanel, .mapToolbar, .searchResults, #legend, .detailsRow, .mapResetButton, .leaflet-popup-content-wrapper, .leaflet-control-zoom a {
+    transition: background-color var(--transition-duration) var(--transition-easing), color var(--transition-duration) var(--transition-easing), border-color var(--transition-duration) var(--transition-easing), box-shadow var(--transition-duration) var(--transition-easing);
+}
+
+/* Accessibility: visible keyboard focus for interactive controls */
+button:focus, .searchResultItem:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(11,58,99,0.16);
+}
+
+/* Ensure icons and charts (if present) inherit color */
+.icon, svg { color: inherit; fill: currentColor; }
+
+/* Allow presentation-mode class in future without refactor */
+body.presentation-mode { /* reserved for future overrides */ }

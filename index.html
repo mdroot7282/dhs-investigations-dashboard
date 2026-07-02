@@ -7,6 +7,7 @@
     <title>DHS Investigative Statistics 2021-Present</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="theme.css">
 </head>
 
 <body>
@@ -33,6 +34,24 @@
                 </div>
             </div>
             <img src="assets/isp-logo.png" alt="Illinois State Police logo" class="headerLogo headerLogoRight">
+            <button id="themeToggle" class="themeToggle" aria-label="Toggle theme" title="Toggle theme" aria-pressed="false">
+                <svg class="icon icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4" fill="currentColor"/>
+                    <g stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v2"/>
+                        <path d="M12 20v2"/>
+                        <path d="M4.93 4.93l1.41 1.41"/>
+                        <path d="M17.66 17.66l1.41 1.41"/>
+                        <path d="M2 12h2"/>
+                        <path d="M20 12h2"/>
+                        <path d="M4.93 19.07l1.41-1.41"/>
+                        <path d="M17.66 6.34l1.41-1.41"/>
+                    </g>
+                </svg>
+                <svg class="icon icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+                </svg>
+            </button>
         </div>
     </header>
 

@@ -388,3 +388,72 @@ fetch("facilities.json")
         facilityFooterEl.textContent = "0";
         lastRefreshEl.textContent = "--";
     });
+
+// Theme system: light/dark toggle, persistence, and OS preference fallback
+(function() {
+    const THEME_KEY = 'dhs-theme';
+    const btn = document.getElementById('themeToggle');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    function applyTheme(theme) {
+        document.body.classList.remove('light-theme', 'dark-theme');
+        document.body.classList.add(theme + '-theme');
+        // update aria-pressed for toggle
+        if (btn) btn.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    }
+
+    function setTheme(theme) {
+        try {
+            localStorage.setItem(THEME_KEY, theme);
+        } catch (e) {}
+        applyTheme(theme);
+        // enable transitions after initial application
+        window.setTimeout(() => document.body.classList.add('theme-ready'), 50);
+    }
+
+    // initialize
+    let stored;
+    try { stored = localStorage.getItem(THEME_KEY); } catch (e) { stored = null; }
+    const initial = stored || (prefersDark ? 'dark' : 'light');
+    applyTheme(initial);
+    // don't animate the first paint; enable transitions shortly after
+    window.setTimeout(() => document.body.classList.add('theme-ready'), 50);
+
+    if (btn) {
+        btn.addEventListener('click', () => {
+            const current = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            setTheme(next);
+        });
+        btn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                btn.click();
+            }
+        });
+    }
+
+    // respond to OS-level changes if user hasn't explicitly set a preference
+    if (window.matchMedia) {
+        try {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                let storedPref = null;
+                try { storedPref = localStorage.getItem(THEME_KEY); } catch (err) { storedPref = null; }
+                if (!storedPref) {
+                    setTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        } catch (e) {
+            // some browsers use addListener
+            try {
+                window.matchMedia('(prefers-color-scheme: dark)').addListener((e) => {
+                    let storedPref = null;
+                    try { storedPref = localStorage.getItem(THEME_KEY); } catch (err) { storedPref = null; }
+                    if (!storedPref) {
+                        setTheme(e.matches ? 'dark' : 'light');
+                    }
+                });
+            } catch (_) {}
+        }
+    }
+})();
