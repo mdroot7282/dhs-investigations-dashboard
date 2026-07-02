@@ -13,7 +13,9 @@
 <body>
     <header id="header">
         <div class="headerBanner">
-            <img src="assets/isp-logo.png" alt="Illinois State Police logo" class="headerLogo">
+            <div class="headerLeft">
+                <img src="assets/isp-logo.png" alt="Illinois State Police logo" class="headerLogo">
+            </div>
             <div class="headerTitleContent">
                 <span class="headerOrg">ILLINOIS STATE POLICE</span>
                 <h1>DHS Investigative Statistics</h1>
@@ -33,25 +35,24 @@
                     </div>
                 </div>
             </div>
-            <img src="assets/isp-logo.png" alt="Illinois State Police logo" class="headerLogo headerLogoRight">
-            <button id="themeToggle" class="themeToggle" aria-label="Toggle theme" title="Toggle theme" aria-pressed="false">
-                <svg class="icon icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <circle cx="12" cy="12" r="4" fill="currentColor"/>
-                    <g stroke="currentColor" stroke-width="2">
-                        <path d="M12 2v2"/>
-                        <path d="M12 20v2"/>
-                        <path d="M4.93 4.93l1.41 1.41"/>
-                        <path d="M17.66 17.66l1.41 1.41"/>
-                        <path d="M2 12h2"/>
-                        <path d="M20 12h2"/>
-                        <path d="M4.93 19.07l1.41-1.41"/>
-                        <path d="M17.66 6.34l1.41-1.41"/>
-                    </g>
-                </svg>
-                <svg class="icon icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
-                </svg>
-            </button>
+            <div class="headerRight">
+                <div class="headerControls" aria-label="Header controls">
+                    <button id="presentationToggle" class="headerControlButton" type="button" aria-label="Enter presentation mode" title="Presentation Mode" aria-pressed="false">
+                        <svg class="icon icon-monitor" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <rect x="3" y="4" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+                            <path d="M8 20h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M12 18v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <span class="controlLabel">Presentation Mode</span>
+                    </button>
+                    <button id="themeToggle" class="headerControlButton" type="button" aria-label="Toggle dark mode" title="Dark Mode" aria-pressed="false">
+                        <svg class="icon icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>
+                        </svg>
+                        <span class="controlLabel">Dark Mode</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -125,10 +126,30 @@
             <div id="details">
                 Select a facility on the map to view details here.
             </div>
+            <div id="presentationDetails" class="presentationDetails" aria-hidden="true">
+                <div class="presentationTitle" id="presentationFacilityName"></div>
+                <div class="presentationMetaRow">
+                    <span class="presentationMetaLabel">City</span>
+                    <span class="presentationMetaValue" id="presentationCity"></span>
+                </div>
+                <div class="presentationMetaRow">
+                    <span class="presentationMetaLabel">Last Updated</span>
+                    <span class="presentationMetaValue" id="presentationLastUpdated"></span>
+                </div>
+                <div class="presentationSectionTitle">INVESTIGATION STATISTICS</div>
+                <div class="presentationStats">
+                    <span class="presentationStatLabel">Total Allegations</span><span class="presentationStatValue" id="presentationTotalAllegations"></span>
+                    <span class="presentationStatLabel">Cases Opened</span><span class="presentationStatValue" id="presentationTotalOpened"></span>
+                    <span class="presentationStatLabel">Battery Cases</span><span class="presentationStatValue" id="presentationBatteryCases"></span>
+                    <span class="presentationStatLabel">Sexual Misconduct Cases</span><span class="presentationStatValue" id="presentationSexualMisconductCases"></span>
+                    <span class="presentationStatLabel">Convictions</span><span class="presentationStatValue" id="presentationConvictions"></span>
+                    <span class="presentationStatLabel">Active Cases</span><span class="presentationStatValue" id="presentationActiveCases"></span>
+                </div>
+            </div>
         </aside>
     </section>
 
-    <div id="footerData" style="display: none;">
+    <div id="footerData" style="display: none;" aria-hidden="true">
         <span id="lastRefresh">--</span>
         <span id="facilityFooter">0</span>
     </div>

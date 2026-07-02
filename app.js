@@ -6,24 +6,41 @@
 const map = L.map("map", {
     minZoom: CONFIG.map.minZoom,
     maxZoom: CONFIG.map.maxZoom
-}).setView(CONFIG.map.center, CONFIG.map.zoom);
+});
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap Contributors"
 }).addTo(map);
 
+const illinoisBounds = L.latLngBounds(
+    [36.97, -91.65],
+    [42.55, -87.45]
+);
+
+function resetToIllinoisView() {
+    map.fitBounds(illinoisBounds, {
+        padding: [40, 40],
+        animate: true
+    });
+}
+
 const bounds = L.latLngBounds();
 const detailsEl = document.getElementById("details");
+const presentationFacilityNameEl = document.getElementById("presentationFacilityName");
+const presentationCityEl = document.getElementById("presentationCity");
+const presentationLastUpdatedEl = document.getElementById("presentationLastUpdated");
+const presentationTotalAllegationsEl = document.getElementById("presentationTotalAllegations");
+const presentationTotalOpenedEl = document.getElementById("presentationTotalOpened");
+const presentationBatteryCasesEl = document.getElementById("presentationBatteryCases");
+const presentationSexualMisconductCasesEl = document.getElementById("presentationSexualMisconductCases");
+const presentationConvictionsEl = document.getElementById("presentationConvictions");
+const presentationActiveCasesEl = document.getElementById("presentationActiveCases");
 const lastRefreshEl = document.getElementById("lastRefresh");
 const facilityFooterEl = document.getElementById("facilityFooter");
 const searchInputEl = document.getElementById("facilitySearchInput");
 const searchResultsEl = document.getElementById("facilitySearchResults");
 const searchToolbarEl = document.getElementById("mapToolbar");
 const resetViewButton = document.getElementById("resetViewButton");
-const initialMapState = {
-    center: CONFIG.map.center,
-    zoom: CONFIG.map.zoom
-};
 
 if (resetViewButton) {
     resetViewButton.addEventListener("click", () => {
@@ -33,7 +50,7 @@ if (resetViewButton) {
         searchInputEl.value = "";
         hideSearchResults();
         showInitialMessage();
-        map.setView(initialMapState.center, initialMapState.zoom);
+        resetToIllinoisView();
     });
 }
 
@@ -167,13 +184,13 @@ function addFacilityMarkers(facilities) {
         };
 
         marker.bindPopup(getPopupHtml(facility), {
-    minWidth: 240,
-    maxWidth: 320,
-    autoPan: true,
-    keepInView: true,
-    autoPanPaddingTopLeft: [20, 180],
-    autoPanPaddingBottomRight: [20, 20]
-});
+            minWidth: 260,
+            maxWidth: 380,
+            autoPan: true,
+            keepInView: true,
+            autoPanPaddingTopLeft: [20, 140],
+            autoPanPaddingBottomRight: [20, 20]
+        });
 
         marker.on("click", () => {
             selectFacility(facility, { flyTo: true, openPopup: true });
@@ -184,7 +201,7 @@ function addFacilityMarkers(facilities) {
     });
 
     if (bounds.isValid()) {
-        map.fitBounds(bounds, { padding: [40, 40] });
+        resetToIllinoisView();
     }
 }
 
@@ -195,6 +212,8 @@ function resetSelectedMarker() {
     }
 
     if (selectedMarker) {
+        const markerElement = selectedMarker.getElement && selectedMarker.getElement();
+        if (markerElement) markerElement.classList.remove('selected-marker');
         selectedMarker.setStyle(selectedMarker.defaultStyle);
         selectedMarker = null;
     }
@@ -204,6 +223,7 @@ function resetSelectedMarker() {
     searchInputEl.value = "";
     hideSearchResults();
     showInitialMessage();
+    updatePresentationDetails(null);
 }
 
 function selectFacility(facility, options = {}) {
@@ -221,17 +241,21 @@ function selectFacility(facility, options = {}) {
     const latitude = parseNumber(facility.Latitude);
     const longitude = parseNumber(facility.Longitude);
 
+    const selectedStroke = getComputedStyle(document.body).getPropertyValue('--selected-marker-stroke').trim() || '#14213d';
     marker.setStyle({
         radius: 13,
         fillColor: marker.defaultStyle.fillColor,
-        color: "#14213d",
+        color: selectedStroke,
         weight: 3,
         opacity: 1,
         fillOpacity: 1
     });
+    const markerElement = marker.getElement && marker.getElement();
+    if (markerElement) markerElement.classList.add('selected-marker');
     marker.bringToFront();
     selectedMarker = marker;
     updateDetails(facility);
+    updatePresentationDetails(facility);
 
     if (options.flyTo !== false && latitude && longitude) {
         map.setView([latitude, longitude], map.getZoom(), {
@@ -254,6 +278,20 @@ function selectFacility(facility, options = {}) {
 
 function updateDetails(facility) {
     detailsEl.innerHTML = formatFacilityInfo(facility);
+}
+
+function updatePresentationDetails(facility) {
+    if (!presentationFacilityNameEl) return;
+
+    presentationFacilityNameEl.textContent = facility ? facility.Title : "";
+    presentationCityEl.textContent = facility ? facility.City : "";
+    presentationLastUpdatedEl.textContent = facility ? facility["Last Updated"] : "";
+    presentationTotalAllegationsEl.textContent = facility ? parseNumber(facility["Total Allegations"]).toLocaleString() : "";
+    presentationTotalOpenedEl.textContent = facility ? parseNumber(facility["Total Cases Opened"]).toLocaleString() : "";
+    presentationBatteryCasesEl.textContent = facility ? parseNumber(facility["Battery Cases"]).toLocaleString() : "";
+    presentationSexualMisconductCasesEl.textContent = facility ? parseNumber(facility["Sexual Misconduct Cases"]).toLocaleString() : "";
+    presentationConvictionsEl.textContent = facility ? parseNumber(facility.Convictions).toLocaleString() : "";
+    presentationActiveCasesEl.textContent = facility ? parseNumber(facility["Active Cases"]).toLocaleString() : "";
 }
 
 function hideSearchResults() {
@@ -432,6 +470,90 @@ fetch("facilities.json")
             }
         });
     }
+
+    // Presentation mode support
+    const presentationButton = document.getElementById('presentationToggle');
+    const PRESENTATION_KEY = 'dhs-presentation-mode';
+    const THEME_BEFORE_PRESENTATION = 'dhs-theme-before-presentation';
+
+    function isPresentationModeActive() {
+        return document.body.classList.contains('presentation-mode');
+    }
+
+    function updatePresentationButton() {
+        if (!presentationButton) return;
+        const isActive = document.body.classList.contains('presentation-mode');
+        presentationButton.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        const label = presentationButton.querySelector('.controlLabel');
+        if (label) {
+            label.textContent = 'Presentation Mode';
+        }
+        presentationButton.title = isActive ? 'Exit presentation mode' : 'Presentation Mode';
+    }
+
+    function exitPresentationMode() {
+        document.body.classList.remove('presentation-mode');
+        updatePresentationButton();
+        try {
+            localStorage.removeItem(PRESENTATION_KEY);
+        } catch (e) {}
+        const previousTheme = localStorage.getItem(THEME_BEFORE_PRESENTATION);
+        if (previousTheme) {
+            setTheme(previousTheme);
+            try {
+                localStorage.removeItem(THEME_BEFORE_PRESENTATION);
+            } catch (e) {}
+        }
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+            const exitFn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+            if (exitFn) exitFn.call(document);
+        }
+    }
+
+    function enterPresentationMode() {
+        const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
+        try {
+            localStorage.setItem(THEME_BEFORE_PRESENTATION, currentTheme);
+            localStorage.setItem(PRESENTATION_KEY, 'true');
+        } catch (e) {}
+        document.body.classList.add('presentation-mode');
+        updatePresentationButton();
+        const element = document.documentElement;
+        const requestFn = element.requestFullscreen || element.webkitRequestFullscreen || element.mozRequestFullScreen || element.msRequestFullscreen;
+        if (requestFn) requestFn.call(element).catch(() => {});
+    }
+
+    if (presentationButton) {
+        presentationButton.addEventListener('click', () => {
+            const isActive = document.body.classList.contains('presentation-mode');
+            if (isActive) {
+                exitPresentationMode();
+            } else {
+                enterPresentationMode();
+            }
+        });
+
+        presentationButton.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                presentationButton.click();
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.body.classList.contains('presentation-mode')) {
+            exitPresentationMode();
+        }
+    });
+
+    try {
+        if (localStorage.getItem(PRESENTATION_KEY) === 'true') {
+            enterPresentationMode();
+        }
+    } catch (e) {}
+
+    updatePresentationButton();
 
     // respond to OS-level changes if user hasn't explicitly set a preference
     if (window.matchMedia) {
