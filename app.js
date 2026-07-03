@@ -139,6 +139,14 @@ function formatFacilityInfo(facility) {
 }
 
 function getPopupHtml(facility) {
+    if (document.body.classList.contains("presentation-mode")) {
+        return `
+        <div class="popupTitle">${facility.Title}</div>
+        <div><strong>City:</strong> ${facility.City}</div>
+        <div><strong>Active Cases:</strong> ${facility["Active Cases"]}</div>
+    `;
+    }
+
     const statisticsHtml = getFacilityStats(facility)
         .map((stat) => `<div><strong>${stat.label}:</strong> ${stat.value}</div>`)
         .join("");
@@ -317,6 +325,7 @@ function selectFacility(facility, options = {}) {
     if (options.openPopup !== false) {
         const popup = marker.getPopup();
         if (popup) {
+            marker.setPopupContent(getPopupHtml(facility));
             Object.assign(popup.options, getPopupPanOptions());
         }
         marker.openPopup();
