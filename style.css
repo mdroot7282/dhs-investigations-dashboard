@@ -1084,7 +1084,7 @@ body.presentation-mode #detailsPanel {
     color: var(--danger);
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 768px) {
     #kpiRow {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
