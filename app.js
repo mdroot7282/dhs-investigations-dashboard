@@ -201,8 +201,7 @@ function getPopupPanOptions() {
         return {
             autoPan: true,
             keepInView: true,
-            autoPanPaddingTopLeft: [40, 60],
-            autoPanPaddingBottomRight: [40, 140]
+            autoPanPadding: [60, 60]
         };
     }
 

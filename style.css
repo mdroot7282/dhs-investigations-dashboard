@@ -880,9 +880,15 @@ body.presentation-mode .leaflet-control-zoom a {
 }
 
 body.presentation-mode .leaflet-popup-content {
-    max-height: 350px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+}
+
+body.presentation-mode .leaflet-popup-content-wrapper {
+    height: auto;
+    max-height: none;
+    overflow: visible;
 }
 
 body.presentation-mode #legend {
