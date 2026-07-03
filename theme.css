@@ -454,7 +454,7 @@ body.presentation-mode .presentationHeader {
 }
 
 body.presentation-mode #presentationDetails .presentationTitle {
-    font-size: clamp(2.35rem, 2.6vw, 3rem);
+    font-size: clamp(1.88rem, 2.08vw, 2.4rem);
     font-weight: 700;
     line-height: 1.1;
     letter-spacing: -0.02em;
@@ -499,6 +499,8 @@ body.presentation-mode .presentationStats {
     grid-template-columns: 1fr;
     grid-template-rows: repeat(7, minmax(0, 1fr));
     gap: 0.95rem;
+    border-bottom: 1px solid var(--divider);
+    padding-bottom: 0.4rem;
 }
 
 body.presentation-mode .presentationStatCard {
@@ -545,8 +547,8 @@ body.presentation-mode .presentationFooter {
     align-items: center;
     justify-content: space-between;
     gap: 0.85rem;
-    border-top: 1px solid var(--divider);
-    padding-top: 0.75rem;
+    border-top: none;
+    padding-top: 0.95rem;
 }
 
 body.presentation-mode .presentationFooterLabel {
