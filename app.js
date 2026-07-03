@@ -35,6 +35,7 @@ const presentationBatteryCasesEl = document.getElementById("presentationBatteryC
 const presentationSexualMisconductCasesEl = document.getElementById("presentationSexualMisconductCases");
 const presentationConvictionsEl = document.getElementById("presentationConvictions");
 const presentationActiveCasesEl = document.getElementById("presentationActiveCases");
+const presentationDismissedEl = document.getElementById("presentationDismissed");
 const lastRefreshEl = document.getElementById("lastRefresh");
 const facilityFooterEl = document.getElementById("facilityFooter");
 const searchInputEl = document.getElementById("facilitySearchInput");
@@ -60,7 +61,8 @@ const kpiElements = {
     batteryCases: document.getElementById("batteryCases"),
     sexualMisconductCases: document.getElementById("sexualMisconductCases"),
     convictions: document.getElementById("convictions"),
-    activeCases: document.getElementById("activeCases")
+    activeCases: document.getElementById("activeCases"),
+    dismissed: document.getElementById("dismissedCases")
 };
 
 function parseNumber(value) {
@@ -81,35 +83,71 @@ function getMarkerColor(activeCases) {
     return CONFIG.colors.red;
 }
 
+function getFacilityStats(facility) {
+    return [
+        { label: "Total Allegations", value: facility["Total Allegations"] },
+        { label: "Total Cases Opened", value: facility["Total Cases Opened"] },
+        { label: "Battery Cases", value: facility["Battery Cases"] },
+        { label: "Sexual Misconduct Cases", value: facility["Sexual Misconduct Cases"] },
+        { label: "Convictions", value: facility.Convictions },
+        { label: "Dismissed", value: facility.Dismissed },
+        { label: "Active Cases", value: facility["Active Cases"] },
+        { label: "Last Updated", value: facility["Last Updated"] }
+    ];
+}
+
+function formatDateOnly(value) {
+    if (value === undefined || value === null || value === "") {
+        return "";
+    }
+
+    const textValue = String(value).trim();
+    const isoDateMatch = textValue.match(/^(\d{4}-\d{2}-\d{2})/);
+    if (isoDateMatch) {
+        return isoDateMatch[1];
+    }
+
+    const parsedDate = new Date(textValue);
+    if (Number.isNaN(parsedDate.getTime())) {
+        return textValue;
+    }
+
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
+    const day = String(parsedDate.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+function getFacilityPanelStats(facility) {
+    return getFacilityStats(facility).map((stat) => (
+        stat.label === "Last Updated"
+            ? { ...stat, value: formatDateOnly(stat.value) }
+            : stat
+    ));
+}
+
 function formatFacilityInfo(facility) {
-    const notes = facility.Notes ? facility.Notes : "No notes available.";
+    const statisticsHtml = getFacilityPanelStats(facility)
+        .map((stat) => `<div class="detailsRow"><span class="detailsLabel">${stat.label}:</span><span>${stat.value}</span></div>`)
+        .join("");
+
     return `
-        <div class="detailsRow"><span class="detailsLabel">Title:</span><span>${facility.Title}</span></div>
+        <div class="detailsRow"><span>${facility.Title}</span></div>
         <div class="detailsRow"><span class="detailsLabel">Address:</span><span>${facility.Address}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">City:</span><span>${facility.City}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">Total Allegations:</span><span>${facility["Total Allegations"]}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">Total Cases Opened:</span><span>${facility["Total Cases Opened"]}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">Battery Cases:</span><span>${facility["Battery Cases"]}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">Sexual Misconduct Cases:</span><span>${facility["Sexual Misconduct Cases"]}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">Convictions:</span><span>${facility.Convictions}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">Active Cases:</span><span>${facility["Active Cases"]}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">Notes:</span><span>${notes}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">Last Updated:</span><span>${facility["Last Updated"]}</span></div>
+        ${statisticsHtml}
     `;
 }
 
 function getPopupHtml(facility) {
+    const statisticsHtml = getFacilityStats(facility)
+        .map((stat) => `<div><strong>${stat.label}:</strong> ${stat.value}</div>`)
+        .join("");
+
     return `
         <div class="popupTitle">${facility.Title}</div>
         <div><strong>Address:</strong> ${facility.Address}</div>
         <div><strong>City:</strong> ${facility.City}</div>
-        <div><strong>Total Allegations:</strong> ${facility["Total Allegations"]}</div>
-        <div><strong>Total Cases Opened:</strong> ${facility["Total Cases Opened"]}</div>
-        <div><strong>Battery Cases:</strong> ${facility["Battery Cases"]}</div>
-        <div><strong>Sexual Misconduct Cases:</strong> ${facility["Sexual Misconduct Cases"]}</div>
-        <div><strong>Convictions:</strong> ${facility.Convictions}</div>
-        <div><strong>Active Cases:</strong> ${facility["Active Cases"]}</div>
-        <div><strong>Last Updated:</strong> ${facility["Last Updated"]}</div>
+        ${statisticsHtml}
     `;
 }
 
@@ -127,6 +165,7 @@ function updateKpis(facilities) {
         acc.sexualMisconductCases += parseNumber(facility["Sexual Misconduct Cases"]);
         acc.convictions += parseNumber(facility.Convictions);
         acc.activeCases += parseNumber(facility["Active Cases"]);
+        acc.dismissed += parseNumber(facility.Dismissed);
         return acc;
     }, {
         totalAllegations: 0,
@@ -134,7 +173,8 @@ function updateKpis(facilities) {
         batteryCases: 0,
         sexualMisconductCases: 0,
         convictions: 0,
-        activeCases: 0
+        activeCases: 0,
+        dismissed: 0
     });
 
     kpiElements.totalAllegations.textContent = totals.totalAllegations.toLocaleString();
@@ -143,6 +183,9 @@ function updateKpis(facilities) {
     kpiElements.sexualMisconductCases.textContent = totals.sexualMisconductCases.toLocaleString();
     kpiElements.convictions.textContent = totals.convictions.toLocaleString();
     kpiElements.activeCases.textContent = totals.activeCases.toLocaleString();
+    if (kpiElements.dismissed) {
+        kpiElements.dismissed.textContent = totals.dismissed.toLocaleString();
+    }
 }
 
 function updateFooter(facilityCount) {
@@ -281,17 +324,33 @@ function updateDetails(facility) {
 }
 
 function updatePresentationDetails(facility) {
-    if (!presentationFacilityNameEl) return;
+      if (!presentationFacilityNameEl) return;
+    if (!facility) {
+    presentationFacilityNameEl.textContent = "";
+    presentationCityEl.textContent = "";
+    presentationTotalAllegationsEl.textContent = "";
+    presentationTotalOpenedEl.textContent = "";
+    presentationBatteryCasesEl.textContent = "";
+    presentationSexualMisconductCasesEl.textContent = "";
+    presentationConvictionsEl.textContent = "";
+    presentationDismissedEl.textContent = "";
+    presentationActiveCasesEl.textContent = "";
+    presentationLastUpdatedEl.textContent = "";
+    return;
+}
+
 
     presentationFacilityNameEl.textContent = facility ? facility.Title : "";
     presentationCityEl.textContent = facility ? facility.City : "";
-    presentationLastUpdatedEl.textContent = facility ? facility["Last Updated"] : "";
     presentationTotalAllegationsEl.textContent = facility ? parseNumber(facility["Total Allegations"]).toLocaleString() : "";
     presentationTotalOpenedEl.textContent = facility ? parseNumber(facility["Total Cases Opened"]).toLocaleString() : "";
     presentationBatteryCasesEl.textContent = facility ? parseNumber(facility["Battery Cases"]).toLocaleString() : "";
     presentationSexualMisconductCasesEl.textContent = facility ? parseNumber(facility["Sexual Misconduct Cases"]).toLocaleString() : "";
     presentationConvictionsEl.textContent = facility ? parseNumber(facility.Convictions).toLocaleString() : "";
+    presentationDismissedEl.textContent = facility ? parseNumber(facility.Dismissed).toLocaleString() : "";
+    console.log("Dismissed:", facility.Dismissed, presentationDismissedEl.textContent);
     presentationActiveCasesEl.textContent = facility ? parseNumber(facility["Active Cases"]).toLocaleString() : "";
+    presentationLastUpdatedEl.textContent = facility ? formatDateOnly(facility["Last Updated"]) : "";
 }
 
 function hideSearchResults() {

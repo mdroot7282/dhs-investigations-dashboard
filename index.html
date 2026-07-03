@@ -92,6 +92,13 @@
             </div>
             <div class="kpiValue" id="convictions">0</div>
         </div>
+        <div class="kpiCard kpiCardGray">
+            <div class="kpiRowTop">
+                <span class="kpiIcon kpiIconGray" aria-hidden="true"></span>
+                <div class="kpiTitle">Dismissed</div>
+            </div>
+            <div class="kpiValue" id="dismissedCases">0</div>
+        </div>
         <div class="kpiCard kpiCardRed">
             <div class="kpiRowTop">
                 <span class="kpiIcon kpiIconRed" aria-hidden="true"></span>
@@ -127,23 +134,49 @@
                 Select a facility on the map to view details here.
             </div>
             <div id="presentationDetails" class="presentationDetails" aria-hidden="true">
-                <div class="presentationTitle" id="presentationFacilityName"></div>
-                <div class="presentationMetaRow">
-                    <span class="presentationMetaLabel">City</span>
-                    <span class="presentationMetaValue" id="presentationCity"></span>
-                </div>
-                <div class="presentationMetaRow">
-                    <span class="presentationMetaLabel">Last Updated</span>
-                    <span class="presentationMetaValue" id="presentationLastUpdated"></span>
-                </div>
-                <div class="presentationSectionTitle">INVESTIGATION STATISTICS</div>
-                <div class="presentationStats">
-                    <span class="presentationStatLabel">Total Allegations</span><span class="presentationStatValue" id="presentationTotalAllegations"></span>
-                    <span class="presentationStatLabel">Cases Opened</span><span class="presentationStatValue" id="presentationTotalOpened"></span>
-                    <span class="presentationStatLabel">Battery Cases</span><span class="presentationStatValue" id="presentationBatteryCases"></span>
-                    <span class="presentationStatLabel">Sexual Misconduct Cases</span><span class="presentationStatValue" id="presentationSexualMisconductCases"></span>
-                    <span class="presentationStatLabel">Convictions</span><span class="presentationStatValue" id="presentationConvictions"></span>
-                    <span class="presentationStatLabel">Active Cases</span><span class="presentationStatValue" id="presentationActiveCases"></span>
+                <div class="presentationMain">
+                    <div class="presentationHeader">
+                        <div class="presentationTitle" id="presentationFacilityName"></div>
+                        <div class="presentationMetaRow">
+                            <span class="presentationMetaLabel">City</span>
+                            <span class="presentationMetaValue" id="presentationCity"></span>
+                        </div>
+                    </div>
+                    <div class="presentationSectionTitle">INVESTIGATION STATISTICS</div>
+                    <div class="presentationStats">
+                        <div class="presentationStatCard presentationStatCardBlue">
+                            <span class="presentationStatLabel">Total Allegations</span>
+                            <span class="presentationStatValue" id="presentationTotalAllegations"></span>
+                        </div>
+                        <div class="presentationStatCard presentationStatCardDarkBlue">
+                            <span class="presentationStatLabel">Cases Opened</span>
+                            <span class="presentationStatValue" id="presentationTotalOpened"></span>
+                        </div>
+                        <div class="presentationStatCard presentationStatCardOrange">
+                            <span class="presentationStatLabel">Battery Cases</span>
+                            <span class="presentationStatValue" id="presentationBatteryCases"></span>
+                        </div>
+                        <div class="presentationStatCard presentationStatCardPurple">
+                            <span class="presentationStatLabel">Sexual Misconduct Cases</span>
+                            <span class="presentationStatValue" id="presentationSexualMisconductCases"></span>
+                        </div>
+                        <div class="presentationStatCard presentationStatCardGreen">
+                            <span class="presentationStatLabel">Convictions</span>
+                            <span class="presentationStatValue" id="presentationConvictions"></span>
+                        </div>
+                        <div class="presentationStatCard presentationStatCardGray">
+                            <span class="presentationStatLabel">Dismissed</span>
+                            <span class="presentationStatValue" id="presentationDismissed"></span>
+                        </div>
+                        <div class="presentationStatCard presentationStatCardRed">
+                            <span class="presentationStatLabel">Active Cases</span>
+                            <span class="presentationStatValue" id="presentationActiveCases"></span>
+                        </div>
+                    </div>
+                    <div class="presentationFooter">
+                        <span class="presentationFooterLabel">Last Updated</span>
+                        <span class="presentationFooterValue" id="presentationLastUpdated"></span>
+                    </div>
                 </div>
             </div>
         </aside>
