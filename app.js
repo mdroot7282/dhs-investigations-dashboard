@@ -139,14 +139,6 @@ function formatFacilityInfo(facility) {
 }
 
 function getPopupHtml(facility) {
-    if (document.body.classList.contains("presentation-mode")) {
-        return `
-        <div class="popupTitle">${facility.Title}</div>
-        <div><strong>City:</strong> ${facility.City}</div>
-        <div><strong>Active Cases:</strong> ${facility["Active Cases"]}</div>
-    `;
-    }
-
     const statisticsHtml = getFacilityStats(facility)
         .map((stat) => `<div><strong>${stat.label}:</strong> ${stat.value}</div>`)
         .join("");
@@ -209,7 +201,8 @@ function getPopupPanOptions() {
         return {
             autoPan: true,
             keepInView: true,
-            autoPanPadding: [60, 60]
+            autoPanPaddingTopLeft: [40, 80],
+            autoPanPaddingBottomRight: [40, 220]
         };
     }
 
@@ -219,6 +212,37 @@ function getPopupPanOptions() {
         autoPanPaddingTopLeft: [20, 140],
         autoPanPaddingBottomRight: [20, 20]
     };
+}
+
+function panPopupUpIfNeeded(marker) {
+    if (!document.body.classList.contains("presentation-mode")) {
+        return;
+    }
+
+    const popup = marker.getPopup();
+    if (!popup) {
+        return;
+    }
+
+    window.requestAnimationFrame(() => {
+        const popupElement = popup.getElement();
+        const mapElement = map.getContainer();
+        if (!popupElement || !mapElement) {
+            return;
+        }
+
+        const popupRect = popupElement.getBoundingClientRect();
+        const mapRect = mapElement.getBoundingClientRect();
+        const safeBottom = mapRect.bottom - 12;
+        const overflow = popupRect.bottom - safeBottom;
+
+        if (overflow > 0) {
+            map.panBy([0, -(overflow + 24)], {
+                animate: true,
+                duration: 0.35
+            });
+        }
+    });
 }
 
 function addFacilityMarkers(facilities) {
@@ -328,6 +352,13 @@ function selectFacility(facility, options = {}) {
             marker.setPopupContent(getPopupHtml(facility));
             Object.assign(popup.options, getPopupPanOptions());
         }
+
+        if (document.body.classList.contains("presentation-mode")) {
+            map.once("popupopen", () => {
+                panPopupUpIfNeeded(marker);
+            });
+        }
+
         marker.openPopup();
     }
 }

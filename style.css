@@ -883,12 +883,23 @@ body.presentation-mode .leaflet-popup-content {
     height: auto;
     max-height: none;
     overflow: visible;
+    font-size: 16px;
+    line-height: 1.45;
 }
 
 body.presentation-mode .leaflet-popup-content-wrapper {
     height: auto;
     max-height: none;
     overflow: visible;
+    padding: 14px 14px 12px;
+}
+
+body.presentation-mode .leaflet-popup-content .popupTitle {
+    margin: 0 0 0.45rem;
+}
+
+body.presentation-mode .leaflet-popup-content div {
+    margin-bottom: 0.38rem;
 }
 
 body.presentation-mode #legend {
