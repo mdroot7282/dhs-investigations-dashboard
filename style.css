@@ -328,8 +328,8 @@ header#header {
 }
 
 .leaflet-control-zoom {
-    margin-top: 100px !important;
-    margin-left: 12px !important;
+    margin-top: 90px !important;
+    margin-left: 10px !important;
     border-radius: 18px;
     box-shadow: var(--shadow-control);
 }
@@ -447,17 +447,19 @@ header#header {
     z-index: 1001;
     background: var(--panel);
     border: 1px solid var(--panel-border);
+    border-top: 1px solid var(--panel-border);
     border-radius: 16px;
-    padding: 16px;
-    box-shadow: var(--shadow-soft);
+    padding: 1rem 1.25rem 1rem;
+    box-shadow: var(--shadow-legend);
     min-width: 220px;
     max-width: 280px;
 }
 
 #legend h4 {
-    margin: 0 0 0.85rem;
+    margin: 0 0 0.75rem;
     font-size: 1rem;
     color: var(--accent-strong);
+    letter-spacing: 0.01em;
 }
 
 #legend div {
@@ -466,7 +468,7 @@ header#header {
     gap: 0.75rem;
     font-size: 0.95rem;
     color: var(--text);
-    margin-bottom: 0.85rem;
+    margin-bottom: 0.5rem;
 }
 
 #legend div:last-child {
@@ -479,11 +481,6 @@ header#header {
     border-radius: 50%;
     display: inline-block;
     border: 1px solid var(--legend-border);
-}
-
-.leaflet-control-zoom {
-    margin-top: 90px !important;
-    margin-left: 10px !important;
 }
 
 .searchResults.visible {
@@ -522,28 +519,6 @@ header#header {
     padding: 0.8rem 1rem;
     color: var(--muted);
     font-size: 0.95rem;
-}
-
-#legend {
-    background: var(--panel);
-    border-top: 1px solid var(--panel-border);
-    padding: 1rem 1.25rem 1rem;
-    box-shadow: var(--shadow-legend);
-}
-
-#legend h4 {
-    margin: 0 0 0.75rem;
-    font-size: 1rem;
-    letter-spacing: 0.01em;
-}
-
-#legend div {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.95rem;
-    color: var(--text);
-    margin-bottom: 0.5rem;
 }
 
 .legendSwatch.green { background: var(--success); }
@@ -732,7 +707,8 @@ header#header {
     }
 }
 
-#presentationDetails {
+#presentationDetails,
+.presentationDetails {
     display: none;
 }
 
@@ -926,7 +902,8 @@ body.presentation-mode #details {
     display: none;
 }
 
-body.presentation-mode #presentationDetails {
+body.presentation-mode #presentationDetails,
+body.presentation-mode .presentationDetails {
     flex: 1;
     min-height: 0;
     height: 100%;
@@ -958,7 +935,8 @@ body.presentation-mode .presentationHeader {
     padding-bottom: 0.55rem;
 }
 
-body.presentation-mode #presentationDetails .presentationTitle {
+body.presentation-mode #presentationDetails .presentationTitle,
+body.presentation-mode .presentationDetails .presentationTitle {
     font-size: clamp(1.45rem, 1.65vw, 1.9rem);
     font-weight: 700;
     line-height: 1.12;
@@ -1081,11 +1059,13 @@ body.presentation-mode #detailsPanel {
 }
 
 @media (max-width: 1400px) {
-    body.presentation-mode #presentationDetails {
+    body.presentation-mode #presentationDetails,
+    body.presentation-mode .presentationDetails {
         padding: 12px;
     }
 
-    body.presentation-mode #presentationDetails .presentationTitle {
+    body.presentation-mode #presentationDetails .presentationTitle,
+    body.presentation-mode .presentationDetails .presentationTitle {
         font-size: clamp(1.3rem, 1.6vw, 1.7rem);
     }
 
