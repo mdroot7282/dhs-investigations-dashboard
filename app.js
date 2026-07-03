@@ -534,10 +534,14 @@ fetch("facilities.json")
     const presentationButton = document.getElementById('presentationToggle');
     const PRESENTATION_KEY = 'dhs-presentation-mode';
     const THEME_BEFORE_PRESENTATION = 'dhs-theme-before-presentation';
+    let themeBeforePresentation = null;
 
-    function isPresentationModeActive() {
-        return document.body.classList.contains('presentation-mode');
-    }
+    // Always start in normal dashboard mode and clear any stale persisted presentation state.
+    document.body.classList.remove('presentation-mode');
+    try {
+        localStorage.removeItem(PRESENTATION_KEY);
+        localStorage.removeItem(THEME_BEFORE_PRESENTATION);
+    } catch (e) {}
 
     function updatePresentationModeButton() {
         if (!presentationButton) return;
@@ -553,15 +557,10 @@ fetch("facilities.json")
     function exitPresentationMode() {
         document.body.classList.remove('presentation-mode');
         updatePresentationModeButton();
-        try {
-            localStorage.removeItem(PRESENTATION_KEY);
-        } catch (e) {}
-        const previousTheme = localStorage.getItem(THEME_BEFORE_PRESENTATION);
+        const previousTheme = themeBeforePresentation;
         if (previousTheme) {
             setTheme(previousTheme);
-            try {
-                localStorage.removeItem(THEME_BEFORE_PRESENTATION);
-            } catch (e) {}
+            themeBeforePresentation = null;
         }
         if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
             const exitFn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
@@ -571,10 +570,7 @@ fetch("facilities.json")
 
     function enterPresentationMode() {
         const currentTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
-        try {
-            localStorage.setItem(THEME_BEFORE_PRESENTATION, currentTheme);
-            localStorage.setItem(PRESENTATION_KEY, 'true');
-        } catch (e) {}
+        themeBeforePresentation = currentTheme;
         document.body.classList.add('presentation-mode');
         updatePresentationModeButton();
         const element = document.documentElement;
@@ -605,12 +601,6 @@ fetch("facilities.json")
             exitPresentationMode();
         }
     });
-
-    try {
-        if (localStorage.getItem(PRESENTATION_KEY) === 'true') {
-            enterPresentationMode();
-        }
-    } catch (e) {}
 
     updatePresentationModeButton();
 
