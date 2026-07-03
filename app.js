@@ -154,7 +154,6 @@ function getPopupHtml(facility) {
 let facilitiesData = [];
 let selectedMarker = null;
 let selectedFacility = null;
-let highlightTimer = null;
 const facilityMarkers = new Map();
 
 function updateKpis(facilities) {
@@ -226,16 +225,7 @@ function addFacilityMarkers(facilities) {
         }
 
         const color = getMarkerColor(activeCases);
-        const marker = L.circleMarker([latitude, longitude], {
-            radius: 10,
-            fillColor: color,
-            color: "#333",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.85
-        }).addTo(map);
-
-        marker.defaultStyle = {
+        const defaultStyle = {
             radius: 10,
             fillColor: color,
             color: "#333",
@@ -243,6 +233,9 @@ function addFacilityMarkers(facilities) {
             opacity: 1,
             fillOpacity: 0.85
         };
+        const marker = L.circleMarker([latitude, longitude], defaultStyle).addTo(map);
+
+        marker.defaultStyle = defaultStyle;
 
         marker.bindPopup(getPopupHtml(facility), {
             minWidth: 260,
@@ -264,17 +257,17 @@ function addFacilityMarkers(facilities) {
 }
 
 function resetSelectedMarker() {
-    if (highlightTimer) {
-        window.clearTimeout(highlightTimer);
-        highlightTimer = null;
-    }
+    facilityMarkers.forEach((marker) => {
+        const markerElement = marker.getElement && marker.getElement();
+        if (markerElement) {
+            markerElement.classList.remove('selected-marker');
+        }
+        if (marker.defaultStyle) {
+            marker.setStyle(marker.defaultStyle);
+        }
+    });
 
-    if (selectedMarker) {
-        const markerElement = selectedMarker.getElement && selectedMarker.getElement();
-        if (markerElement) markerElement.classList.remove('selected-marker');
-        selectedMarker.setStyle(selectedMarker.defaultStyle);
-        selectedMarker = null;
-    }
+    selectedMarker = null;
     // Clear selected facility reference and ensure no popups/search remain
     selectedFacility = null;
     map.closePopup();
@@ -329,13 +322,6 @@ function selectFacility(facility, options = {}) {
         }
         marker.openPopup();
     }
-
-    highlightTimer = window.setTimeout(() => {
-        if (selectedMarker === marker) {
-            marker.setStyle(marker.defaultStyle);
-            selectedMarker = null;
-        }
-    }, 700);
 }
 
 function updateDetails(facility) {
