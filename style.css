@@ -732,6 +732,368 @@ header#header {
     }
 }
 
+#presentationDetails {
+    display: none;
+}
+
+body.presentation-mode {
+    height: 100vh;
+    min-width: 100vw;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    gap: 0.4rem;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+}
+
+body.presentation-mode header#header {
+    position: relative;
+    margin: 0;
+    min-height: auto;
+    padding: 0.25rem 1rem;
+}
+
+body.presentation-mode .headerBanner {
+    margin: 0;
+    gap: 0.8rem;
+    padding: 6px 14px;
+    border-radius: 16px;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.16);
+}
+
+body.presentation-mode .headerLogo {
+    height: 96px;
+    width: auto;
+}
+
+body.presentation-mode .headerTitleContent {
+    gap: 0.1rem;
+    padding: 0 0.5rem;
+}
+
+body.presentation-mode .headerTitleContent h1 {
+    font-size: 32px;
+    line-height: 1;
+}
+
+body.presentation-mode .headerSubtitle {
+    font-size: 18px;
+}
+
+body.presentation-mode .headerStatusRow {
+    margin-top: 0.1rem;
+    gap: 1.1rem;
+}
+
+body.presentation-mode .headerStatusItem {
+    font-size: 16px;
+}
+
+body.presentation-mode .headerControls {
+    gap: 12px;
+}
+
+body.presentation-mode #presentationToggle,
+body.presentation-mode #themeToggle {
+    height: 42px;
+    gap: 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+
+body.presentation-mode #presentationToggle {
+    width: 200px;
+}
+
+body.presentation-mode #themeToggle {
+    width: 150px;
+}
+
+body.presentation-mode #kpiRow {
+    width: 100%;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0 1rem;
+}
+
+body.presentation-mode .kpiCard {
+    min-width: 0;
+    min-height: 86px;
+    padding: 10px 12px;
+    border-radius: 14px;
+}
+
+body.presentation-mode .kpiRowTop {
+    margin-bottom: 0.5rem;
+}
+
+body.presentation-mode .kpiTitle {
+    font-size: 22px;
+    font-weight: 650;
+    line-height: 1.2;
+}
+
+body.presentation-mode .kpiValue {
+    font-size: 72px;
+    font-weight: 750;
+    line-height: 1;
+}
+
+body.presentation-mode .kpiCardRed .kpiTitle,
+body.presentation-mode .kpiCardRed .kpiValue,
+body.presentation-mode .presentationStatLabel,
+body.presentation-mode .presentationStatValue {
+    text-decoration: none;
+}
+
+body.presentation-mode #mainGrid {
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 78% 22%;
+    gap: 0.5rem;
+    padding: 0 1rem 0.35rem;
+    overflow: hidden;
+}
+
+body.presentation-mode #mapPanel,
+body.presentation-mode #detailsPanel {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    overflow: hidden;
+}
+
+body.presentation-mode #mapPanel {
+    padding: 10px;
+}
+
+body.presentation-mode #map {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+}
+
+body.presentation-mode .mapToolbar {
+    top: 10px;
+    left: 10px;
+    padding: 8px 12px;
+}
+
+body.presentation-mode .mapSearchInput {
+    padding: 12px 40px 12px 14px;
+}
+
+body.presentation-mode .mapResetButton {
+    top: 10px;
+    right: 10px;
+}
+
+body.presentation-mode .leaflet-control-zoom a {
+    width: 42px;
+    height: 42px;
+    line-height: 42px;
+}
+
+body.presentation-mode #legend {
+    left: 12px;
+    bottom: 12px;
+    min-width: 280px;
+    max-width: 340px;
+    width: max-content;
+    padding: 14px;
+    overflow: visible;
+}
+
+body.presentation-mode #legend div {
+    white-space: nowrap;
+}
+
+body.presentation-mode #detailsPanel {
+    padding: 14px;
+}
+
+body.presentation-mode #detailsPanel h2,
+body.presentation-mode #details {
+    display: none;
+}
+
+body.presentation-mode #presentationDetails {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 14px;
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 18px;
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+}
+
+body.presentation-mode .presentationMain {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+body.presentation-mode .presentationHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border-bottom: 1px solid var(--divider);
+    padding-bottom: 0.55rem;
+}
+
+body.presentation-mode #presentationDetails .presentationTitle {
+    font-size: clamp(1.45rem, 1.65vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: var(--accent-strong);
+}
+
+body.presentation-mode .presentationMetaRow {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--muted);
+}
+
+body.presentation-mode .presentationMetaLabel,
+body.presentation-mode .presentationMetaValue {
+    font-size: 1.05rem;
+    line-height: 1.1;
+}
+
+body.presentation-mode .presentationMetaLabel {
+    letter-spacing: 0.08em;
+}
+
+body.presentation-mode .presentationSectionTitle {
+    margin-top: 0.15rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-strong);
+}
+
+body.presentation-mode .presentationStats {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(7, minmax(0, 1fr));
+    gap: 0.65rem;
+    border-bottom: 1px solid var(--divider);
+    padding-bottom: 0.45rem;
+}
+
+body.presentation-mode .presentationStatCard {
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.9rem;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+body.presentation-mode .presentationStatLabel {
+    font-size: 1.05rem;
+    font-weight: 550;
+    line-height: 1.25;
+    color: var(--muted);
+}
+
+body.presentation-mode .presentationStatValue {
+    text-align: right;
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--accent-strong);
+}
+
+body.presentation-mode .presentationFooter {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.7rem;
+}
+
+body.presentation-mode .presentationFooterLabel {
+    font-size: 0.95rem;
+    color: var(--muted);
+}
+
+body.presentation-mode .presentationFooterValue {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+}
+
+body.presentation-mode .searchResults {
+    max-height: calc(100vh - 180px);
+}
+
+body.presentation-mode .kpiCard:hover {
+    transform: none;
+    box-shadow: var(--shadow-soft);
+}
+
+body.presentation-mode #header,
+body.presentation-mode #mainGrid,
+body.presentation-mode #kpiRow,
+body.presentation-mode #mapPanel,
+body.presentation-mode #detailsPanel {
+    transition: none;
+}
+
+@media (min-width: 2200px) {
+    body.presentation-mode .presentationStats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: none;
+    }
+
+    body.presentation-mode .presentationStatCard:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 1400px) {
+    body.presentation-mode #presentationDetails {
+        padding: 12px;
+    }
+
+    body.presentation-mode #presentationDetails .presentationTitle {
+        font-size: clamp(1.3rem, 1.6vw, 1.7rem);
+    }
+
+    body.presentation-mode .presentationStatCard {
+        padding: 0;
+    }
+}
+
 
 .popupTitle {
     font-weight: 700;
