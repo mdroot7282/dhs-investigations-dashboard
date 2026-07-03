@@ -879,6 +879,12 @@ body.presentation-mode .leaflet-control-zoom a {
     line-height: 42px;
 }
 
+body.presentation-mode .leaflet-popup-content {
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 body.presentation-mode #legend {
     left: 12px;
     bottom: 12px;

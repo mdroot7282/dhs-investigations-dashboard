@@ -197,6 +197,24 @@ function updateFacilityCount(facilityCount) {
     facilityFooterEl.textContent = facilityCount.toLocaleString();
 }
 
+function getPopupPanOptions() {
+    if (document.body.classList.contains("presentation-mode")) {
+        return {
+            autoPan: true,
+            keepInView: true,
+            autoPanPaddingTopLeft: [40, 60],
+            autoPanPaddingBottomRight: [40, 140]
+        };
+    }
+
+    return {
+        autoPan: true,
+        keepInView: true,
+        autoPanPaddingTopLeft: [20, 140],
+        autoPanPaddingBottomRight: [20, 20]
+    };
+}
+
 function addFacilityMarkers(facilities) {
     facilities.forEach((facility) => {
         const latitude = parseNumber(facility.Latitude);
@@ -229,10 +247,7 @@ function addFacilityMarkers(facilities) {
         marker.bindPopup(getPopupHtml(facility), {
             minWidth: 260,
             maxWidth: 380,
-            autoPan: true,
-            keepInView: true,
-            autoPanPaddingTopLeft: [20, 140],
-            autoPanPaddingBottomRight: [20, 20]
+            ...getPopupPanOptions()
         });
 
         marker.on("click", () => {
@@ -308,6 +323,10 @@ function selectFacility(facility, options = {}) {
     }
 
     if (options.openPopup !== false) {
+        const popup = marker.getPopup();
+        if (popup) {
+            Object.assign(popup.options, getPopupPanOptions());
+        }
         marker.openPopup();
     }
 
