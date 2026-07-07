@@ -14,6 +14,8 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 
 const ILLINOIS_STATES_GEOJSON_URL = "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json";
 let illinoisBoundaryLayer = null;
+let isIllinoisBoundaryReady = false;
+let areFacilityMarkersReady = false;
 
 map.createPane("illinoisBoundaryPane");
 map.getPane("illinoisBoundaryPane").style.zIndex = 450;
@@ -51,6 +53,24 @@ function getIllinoisOuterRings(illinoisFeature) {
     }
 
     return [];
+}
+
+function resetMapToIllinois() {
+    if (!illinoisBoundaryLayer || !isIllinoisBoundaryReady || !areFacilityMarkersReady) {
+        return;
+    }
+
+    const mapContainer = map.getContainer();
+    if (!mapContainer || mapContainer.offsetWidth === 0 || mapContainer.offsetHeight === 0) {
+        return;
+    }
+
+    map.fitBounds(illinoisBoundaryLayer.getBounds(), {
+        paddingTopLeft: [5, 5],
+        paddingBottomRight: [5, 5],
+        maxZoom: 7
+    });
+    map.invalidateSize();
 }
 
 function addIllinoisVisualFocusOverlay() {
@@ -96,9 +116,13 @@ function addIllinoisVisualFocusOverlay() {
                     fillOpacity: 0
                 }
             }).addTo(map);
+            isIllinoisBoundaryReady = true;
 
-            // Refit after boundary loads so Illinois dominates the viewport vertically.
-            resetToIllinoisView();
+            // Delay reset to let GitHub Pages/Leaflet finish calculating map size.
+            setTimeout(() => {
+                map.invalidateSize();
+                resetMapToIllinois();
+            }, 300);
         })
         .catch((error) => {
             console.warn(error);
@@ -106,23 +130,6 @@ function addIllinoisVisualFocusOverlay() {
 }
 
 addIllinoisVisualFocusOverlay();
-
-const illinoisFallbackBounds = L.latLngBounds(
-    [36.97, -91.65],
-    [42.55, -87.45]
-);
-
-function resetToIllinoisView() {
-    const boundaryBounds = illinoisBoundaryLayer && illinoisBoundaryLayer.getBounds
-        ? illinoisBoundaryLayer.getBounds()
-        : null;
-
-    map.fitBounds(boundaryBounds && boundaryBounds.isValid() ? boundaryBounds : illinoisFallbackBounds, {
-        paddingTopLeft: [10, 10],
-        paddingBottomRight: [10, 10],
-        animate: true
-    });
-}
 
 const bounds = L.latLngBounds();
 const detailsEl = document.getElementById("details");
@@ -148,7 +155,7 @@ if (resetViewButton) {
         searchInputEl.value = "";
         hideSearchResults();
         showInitialMessage();
-        resetToIllinoisView();
+        resetMapToIllinois();
     });
 }
 
@@ -490,9 +497,7 @@ function addFacilityMarkers(facilities) {
         bounds.extend([latitude, longitude]);
     });
 
-    if (bounds.isValid()) {
-        resetToIllinoisView();
-    }
+    areFacilityMarkersReady = true;
 }
 
 function resetSelectedMarker() {
@@ -748,6 +753,12 @@ fetch("facilities.json")
         addFacilityMarkers(facilitiesData);
         updateFooter(facilitiesData.length);
         showInitialMessage();
+
+        // Delay reset to ensure container size is finalized on initial load.
+        setTimeout(() => {
+            map.invalidateSize();
+            resetMapToIllinois();
+        }, 300);
     })
     .catch((error) => {
         console.error(error);
@@ -836,6 +847,11 @@ fetch("facilities.json")
             const exitFn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
             if (exitFn) exitFn.call(document);
         }
+
+        setTimeout(() => {
+            map.invalidateSize();
+            resetMapToIllinois();
+        }, 300);
     }
 
     function enterPresentationMode() {
@@ -846,6 +862,11 @@ fetch("facilities.json")
         const element = document.documentElement;
         const requestFn = element.requestFullscreen || element.webkitRequestFullscreen || element.mozRequestFullScreen || element.msRequestFullscreen;
         if (requestFn) requestFn.call(element).catch(() => {});
+
+        setTimeout(() => {
+            map.invalidateSize();
+            resetMapToIllinois();
+        }, 300);
     }
 
     if (presentationButton) {
