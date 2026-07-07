@@ -5,7 +5,8 @@
 
 const map = L.map("map", {
     minZoom: CONFIG.map.minZoom,
-    maxZoom: CONFIG.map.maxZoom
+    maxZoom: CONFIG.map.maxZoom,
+    zoomSnap: 0.25
 });
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -73,18 +74,10 @@ function resetMapToIllinois() {
     map.invalidateSize();
 }
 
-function resetMapToIllinoisPresentation() {
+function resetPresentationMapView() {
     map.invalidateSize();
 
-    const illinoisBounds = L.latLngBounds(
-        [36.95, -91.55],
-        [42.55, -87.45]
-    );
-
-    map.fitBounds(illinoisBounds, {
-        paddingTopLeft: [2, 2],
-        paddingBottomRight: [2, 2],
-        maxZoom: 8,
+    map.setView([40.05, -89.20], 7, {
         animate: false
     });
 }
@@ -172,7 +165,7 @@ if (resetViewButton) {
         hideSearchResults();
         showInitialMessage();
         if (document.body.classList.contains("presentation-mode")) {
-            resetMapToIllinoisPresentation();
+            resetPresentationMapView();
             return;
         }
 
@@ -884,13 +877,10 @@ fetch("facilities.json")
         const requestFn = element.requestFullscreen || element.webkitRequestFullscreen || element.mozRequestFullScreen || element.msRequestFullscreen;
         if (requestFn) requestFn.call(element).catch(() => {});
 
-        setTimeout(() => {
-            resetMapToIllinoisPresentation();
-        }, 500);
-
-        setTimeout(() => {
-            resetMapToIllinoisPresentation();
-        }, 1000);
+        setTimeout(resetPresentationMapView, 100);
+        setTimeout(resetPresentationMapView, 500);
+        setTimeout(resetPresentationMapView, 1000);
+        setTimeout(resetPresentationMapView, 1500);
     }
 
     if (presentationButton) {
