@@ -6,7 +6,8 @@
 const map = L.map("map", {
     minZoom: CONFIG.map.minZoom,
     maxZoom: CONFIG.map.maxZoom,
-    zoomSnap: 0.25
+    zoomSnap: 0.25,
+    zoomDelta: 0.25
 });
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -79,7 +80,7 @@ function resetMapToIllinois() {
 function resetPresentationMapView() {
     map.invalidateSize();
 
-    map.setView([40.05, -89.20], 7, {
+    map.setView([40.05, -89.20], 6.5, {
         animate: false
     });
 }
