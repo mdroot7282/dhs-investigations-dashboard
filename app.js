@@ -73,6 +73,22 @@ function resetMapToIllinois() {
     map.invalidateSize();
 }
 
+function resetMapToIllinoisPresentation() {
+    map.invalidateSize();
+
+    const illinoisBounds = L.latLngBounds(
+        [36.95, -91.55],
+        [42.55, -87.45]
+    );
+
+    map.fitBounds(illinoisBounds, {
+        paddingTopLeft: [2, 2],
+        paddingBottomRight: [2, 2],
+        maxZoom: 8,
+        animate: false
+    });
+}
+
 function addIllinoisVisualFocusOverlay() {
     return fetch(ILLINOIS_STATES_GEOJSON_URL)
         .then((response) => {
@@ -155,6 +171,11 @@ if (resetViewButton) {
         searchInputEl.value = "";
         hideSearchResults();
         showInitialMessage();
+        if (document.body.classList.contains("presentation-mode")) {
+            resetMapToIllinoisPresentation();
+            return;
+        }
+
         resetMapToIllinois();
     });
 }
@@ -864,9 +885,12 @@ fetch("facilities.json")
         if (requestFn) requestFn.call(element).catch(() => {});
 
         setTimeout(() => {
-            map.invalidateSize();
-            resetMapToIllinois();
-        }, 300);
+            resetMapToIllinoisPresentation();
+        }, 500);
+
+        setTimeout(() => {
+            resetMapToIllinoisPresentation();
+        }, 1000);
     }
 
     if (presentationButton) {
