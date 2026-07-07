@@ -98,20 +98,23 @@
             <div id="legend">
                 <h4>Legend</h4>
                 <h4 class="legendSubheading">Total Cases Opened</h4>
-                <div><span class="legendSwatch green"></span>0-10 Total Cases Opened</div>
-                <div><span class="legendSwatch yellow"></span>11-20 Total Cases Opened</div>
-                <div><span class="legendSwatch orange"></span>21-30 Total Cases Opened</div>
-                <div><span class="legendSwatch red"></span>31+ Total Cases Opened</div>
+                <div class="legendRange"><span class="legendSwatch green"></span>1-10</div>
+                <div class="legendRange"><span class="legendSwatch yellow"></span>11-20</div>
+                <div class="legendRange"><span class="legendSwatch orange"></span>21-30</div>
+                <div class="legendRange"><span class="legendSwatch red"></span>31+</div>
                 <div class="legendDivider" aria-hidden="true"></div>
                 <div class="legendGuide" role="note" aria-label="Marker guide">
                     <h5>Marker Guide</h5>
-                    <div>• Number inside the marker = Active Cases</div>
-                    <div>• Marker size = Total Cases Opened</div>
-                    <div>• Marker color = Total Cases Opened</div>
+                    <div>🔢 Number = Active Cases</div>
+                    <div>📍 Size = Total Cases Opened</div>
+                    <div>🎨 Color = Total Cases Opened</div>
                 </div>
-                <h4 class="legendSubheading">Surveillance Cameras</h4>
-                <div><i class="fa-solid fa-video legendCameraIcon" aria-hidden="true"></i>Camera System Present</div>
-                <div><i class="fa-solid fa-video-slash legendCameraIcon" aria-hidden="true"></i>No Camera System</div>
+                <div class="legendDivider" aria-hidden="true"></div>
+                <div class="legendGuide legendCameraGuide" role="note" aria-label="Camera guide">
+                    <h5>Camera Guide</h5>
+                    <div><i class="fa-solid fa-video legendCameraIcon" aria-hidden="true"></i>Camera Present</div>
+                    <div><i class="fa-solid fa-video-slash legendCameraIcon" aria-hidden="true"></i>No Camera Present</div>
+                </div>
             </div>
         </section>
 

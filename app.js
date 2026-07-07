@@ -12,14 +12,114 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "&copy; OpenStreetMap Contributors"
 }).addTo(map);
 
-const illinoisBounds = L.latLngBounds(
+const ILLINOIS_STATES_GEOJSON_URL = "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json";
+let illinoisBoundaryLayer = null;
+
+map.createPane("illinoisBoundaryPane");
+map.getPane("illinoisBoundaryPane").style.zIndex = 450;
+
+function toLatLngRing(ring) {
+    return ring.map(([lng, lat]) => [lat, lng]);
+}
+
+function getIllinoisFeature(statesGeoJson) {
+    if (!statesGeoJson || !Array.isArray(statesGeoJson.features)) {
+        return null;
+    }
+
+    return statesGeoJson.features.find((feature) => {
+        const name = feature && feature.properties && feature.properties.name;
+        return String(name || "").toLowerCase() === "illinois";
+    }) || null;
+}
+
+function getIllinoisOuterRings(illinoisFeature) {
+    if (!illinoisFeature || !illinoisFeature.geometry) {
+        return [];
+    }
+
+    const { type, coordinates } = illinoisFeature.geometry;
+
+    if (type === "Polygon" && Array.isArray(coordinates) && coordinates[0]) {
+        return [coordinates[0]];
+    }
+
+    if (type === "MultiPolygon" && Array.isArray(coordinates)) {
+        return coordinates
+            .filter((polygon) => Array.isArray(polygon) && polygon[0])
+            .map((polygon) => polygon[0]);
+    }
+
+    return [];
+}
+
+function addIllinoisVisualFocusOverlay() {
+    return fetch(ILLINOIS_STATES_GEOJSON_URL)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Unable to load Illinois boundary data");
+            }
+            return response.json();
+        })
+        .then((statesGeoJson) => {
+            const illinoisFeature = getIllinoisFeature(statesGeoJson);
+            if (!illinoisFeature) {
+                throw new Error("Illinois boundary not found in GeoJSON");
+            }
+
+            const illinoisOuterRings = getIllinoisOuterRings(illinoisFeature).map(toLatLngRing);
+            if (!illinoisOuterRings.length) {
+                throw new Error("Illinois geometry did not include an outer ring");
+            }
+
+            // Dim everything outside Illinois while leaving Illinois at full brightness.
+            L.polygon([
+                [[-90, -360], [-90, 360], [90, 360], [90, -360]],
+                ...illinoisOuterRings
+            ], {
+                pane: "overlayPane",
+                stroke: false,
+                fillColor: "#5f6f82",
+                fillOpacity: 0.25,
+                fillRule: "evenodd",
+                interactive: false
+            }).addTo(map);
+
+            // Keep Illinois boundary visible at all zoom levels.
+            illinoisBoundaryLayer = L.geoJSON(illinoisFeature, {
+                pane: "illinoisBoundaryPane",
+                interactive: false,
+                style: {
+                    color: "#0b2f63",
+                    weight: 3,
+                    opacity: 0.95,
+                    fillOpacity: 0
+                }
+            }).addTo(map);
+
+            // Refit after boundary loads so Illinois dominates the viewport vertically.
+            resetToIllinoisView();
+        })
+        .catch((error) => {
+            console.warn(error);
+        });
+}
+
+addIllinoisVisualFocusOverlay();
+
+const illinoisFallbackBounds = L.latLngBounds(
     [36.97, -91.65],
     [42.55, -87.45]
 );
 
 function resetToIllinoisView() {
-    map.fitBounds(illinoisBounds, {
-        padding: [40, 40],
+    const boundaryBounds = illinoisBoundaryLayer && illinoisBoundaryLayer.getBounds
+        ? illinoisBoundaryLayer.getBounds()
+        : null;
+
+    map.fitBounds(boundaryBounds && boundaryBounds.isValid() ? boundaryBounds : illinoisFallbackBounds, {
+        paddingTopLeft: [10, 10],
+        paddingBottomRight: [10, 10],
         animate: true
     });
 }
@@ -157,6 +257,22 @@ function getMarkerLabelClass(totalOpened) {
     return `markerValue markerValue${bucket}`;
 }
 
+function getMarkerTooltipHtml(activeCases, cameraValue) {
+    const cameraState = getCameraState(cameraValue);
+    let cameraIconClass = "fa-video-slash";
+
+    if (cameraState === "yes") {
+        cameraIconClass = "fa-video";
+    }
+
+    return `
+        <span class="markerCameraWrap" aria-hidden="true">
+            <i class="fa-solid ${cameraIconClass} markerCameraIcon"></i>
+        </span>
+        <span class="markerNumber">${activeCases}</span>
+    `;
+}
+
 function getFacilityStats(facility) {
     return [
         { label: "Active Cases", value: facility["Active Cases"] },
@@ -165,6 +281,21 @@ function getFacilityStats(facility) {
         { label: "Sexual Misconduct Cases", value: facility["Sexual Misconduct Cases"] },
         { label: "Last Updated", value: formatDateOnly(facility["Last Updated"]) }
     ];
+}
+
+function getPopupCameraMeta(cameraValue) {
+    const cameraState = getCameraState(cameraValue);
+    if (cameraState === "yes") {
+        return {
+            iconClass: "fa-video",
+            statusText: "Present"
+        };
+    }
+
+    return {
+        iconClass: "fa-video-slash",
+        statusText: "Not Present"
+    };
 }
 
 function formatDateOnly(value) {
@@ -215,17 +346,16 @@ function formatFacilityInfo(facility) {
 }
 
 function getPopupHtml(facility) {
+    const cameraMeta = getPopupCameraMeta(facility.Camera);
     const statisticsHtml = getFacilityStats(facility)
         .map((stat) => {
-            const value = stat.label === "Last Updated" ? formatDateOnly(stat.value) : stat.value;
-            return `<div><strong>${stat.label}:</strong> ${value}</div>`;
+            return `<div><strong>${stat.label}:</strong> ${stat.value}</div>`;
         })
         .join("");
 
     return `
         <div class="popupTitle">${facility.Title}</div>
-        <div><strong>Address:</strong> ${facility.Address}</div>
-        <div><strong>City:</strong> ${facility.City}</div>
+        <div class="popupCameraStatus"><strong><i class="fa-solid ${cameraMeta.iconClass}" aria-hidden="true"></i> Surveillance Cameras:</strong> ${cameraMeta.statusText}</div>
         ${statisticsHtml}
     `;
 }
@@ -344,7 +474,7 @@ function addFacilityMarkers(facilities) {
             ...getPopupPanOptions()
         });
 
-        marker.bindTooltip(String(activeCases), {
+        marker.bindTooltip(getMarkerTooltipHtml(activeCases, facility.Camera), {
             permanent: true,
             direction: "center",
             className: getMarkerLabelClass(totalOpened),
