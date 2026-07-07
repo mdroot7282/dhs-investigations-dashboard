@@ -32,9 +32,7 @@ const presentationLastUpdatedEl = document.getElementById("presentationLastUpdat
 const presentationTotalOpenedEl = document.getElementById("presentationTotalOpened");
 const presentationBatteryCasesEl = document.getElementById("presentationBatteryCases");
 const presentationSexualMisconductCasesEl = document.getElementById("presentationSexualMisconductCases");
-const presentationConvictionsEl = document.getElementById("presentationConvictions");
 const presentationActiveCasesEl = document.getElementById("presentationActiveCases");
-const presentationDismissedEl = document.getElementById("presentationDismissed");
 const lastRefreshEl = document.getElementById("lastRefresh");
 const facilityFooterEl = document.getElementById("facilityFooter");
 const searchInputEl = document.getElementById("facilitySearchInput");
@@ -163,13 +161,10 @@ function getMarkerLabelClass(totalOpened) {
 
 function getFacilityStats(facility) {
     return [
-        { label: "Total Allegations", value: facility["Total Allegations"] },
+        { label: "Active Cases", value: facility["Active Cases"] },
         { label: "Total Cases Opened", value: facility["Total Cases Opened"] },
         { label: "Battery Cases", value: facility["Battery Cases"] },
         { label: "Sexual Misconduct Cases", value: facility["Sexual Misconduct Cases"] },
-        { label: "Convictions", value: facility.Convictions },
-        { label: "Dismissed", value: facility.Dismissed },
-        { label: "Active Cases", value: facility["Active Cases"] },
         { label: "Last Updated", value: formatDateOnly(facility["Last Updated"]) }
     ];
 }
@@ -192,8 +187,6 @@ function getFacilityPanelStats(facility) {
         { label: "Total Cases Opened", value: facility["Total Cases Opened"], colorClass: "metricOpened" },
         { label: "Battery Cases", value: facility["Battery Cases"], colorClass: "metricBattery" },
         { label: "Sexual Misconduct Cases", value: facility["Sexual Misconduct Cases"], colorClass: "metricSexual" },
-        { label: "Convictions", value: facility.Convictions, colorClass: "metricConvictions" },
-        { label: "Dismissed", value: facility.Dismissed, colorClass: "metricDismissed" },
         { label: "Last Updated", value: formatDateOnly(facility["Last Updated"]), muted: true }
     ];
 }
@@ -463,8 +456,6 @@ function updatePresentationDetails(facility) {
     presentationTotalOpenedEl.textContent = "";
     presentationBatteryCasesEl.textContent = "";
     presentationSexualMisconductCasesEl.textContent = "";
-    presentationConvictionsEl.textContent = "";
-    presentationDismissedEl.textContent = "";
     presentationActiveCasesEl.textContent = "";
     presentationLastUpdatedEl.textContent = "";
     return;
@@ -477,8 +468,6 @@ function updatePresentationDetails(facility) {
     presentationTotalOpenedEl.textContent = facility ? parseNumber(facility["Total Cases Opened"]).toLocaleString() : "";
     presentationBatteryCasesEl.textContent = facility ? parseNumber(facility["Battery Cases"]).toLocaleString() : "";
     presentationSexualMisconductCasesEl.textContent = facility ? parseNumber(facility["Sexual Misconduct Cases"]).toLocaleString() : "";
-    presentationConvictionsEl.textContent = facility ? parseNumber(facility.Convictions).toLocaleString() : "";
-    presentationDismissedEl.textContent = facility ? parseNumber(facility.Dismissed).toLocaleString() : "";
     presentationLastUpdatedEl.textContent = facility ? formatDateOnly(facility["Last Updated"]) : "";
 }
 
