@@ -506,6 +506,38 @@ header#header {
     margin-bottom: 0;
 }
 
+#legend .legendDivider {
+    height: 1px;
+    background: var(--divider);
+    opacity: 0.75;
+    margin: 0.75rem 0 0.8rem;
+}
+
+#legend .legendGuide {
+    display: block;
+    margin-bottom: 0.9rem;
+}
+
+#legend .legendGuide h5 {
+    margin: 0 0 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--accent-strong);
+    letter-spacing: 0.01em;
+}
+
+#legend .legendGuide div {
+    display: block;
+    margin: 0 0 0.22rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    color: var(--muted);
+}
+
+#legend .legendGuide div:last-child {
+    margin-bottom: 0;
+}
+
 .legendCameraIcon {
     width: 16px;
     text-align: center;

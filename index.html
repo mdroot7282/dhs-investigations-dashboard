@@ -97,10 +97,18 @@
             <div id="map"></div>
             <div id="legend">
                 <h4>Legend</h4>
-                <div><span class="legendSwatch green"></span>0 Active Cases</div>
-                <div><span class="legendSwatch yellow"></span>1–2 Active Cases</div>
-                <div><span class="legendSwatch orange"></span>3–5 Active Cases</div>
-                <div><span class="legendSwatch red"></span>6+ Active Cases</div>
+                <h4 class="legendSubheading">Total Cases Opened</h4>
+                <div><span class="legendSwatch green"></span>0-10 Total Cases Opened</div>
+                <div><span class="legendSwatch yellow"></span>11-20 Total Cases Opened</div>
+                <div><span class="legendSwatch orange"></span>21-30 Total Cases Opened</div>
+                <div><span class="legendSwatch red"></span>31+ Total Cases Opened</div>
+                <div class="legendDivider" aria-hidden="true"></div>
+                <div class="legendGuide" role="note" aria-label="Marker guide">
+                    <h5>Marker Guide</h5>
+                    <div>• Number inside the marker = Active Cases</div>
+                    <div>• Marker size = Total Cases Opened</div>
+                    <div>• Marker color = Total Cases Opened</div>
+                </div>
                 <h4 class="legendSubheading">Surveillance Cameras</h4>
                 <div><i class="fa-solid fa-video legendCameraIcon" aria-hidden="true"></i>Camera System Present</div>
                 <div><i class="fa-solid fa-video-slash legendCameraIcon" aria-hidden="true"></i>No Camera System</div>

@@ -121,29 +121,27 @@ function getCameraIconHtml(cameraValue) {
 }
 
 function getOpenedCaseBucket(totalOpened) {
-    if (totalOpened <= 4) {
+    if (totalOpened <= 10) {
         return 0;
     }
-    if (totalOpened <= 9) {
+    if (totalOpened <= 20) {
         return 1;
     }
-    if (totalOpened <= 14) {
+    if (totalOpened <= 30) {
         return 2;
     }
-    if (totalOpened <= 19) {
-        return 3;
-    }
-    return 4;
+    return 3;
 }
 
-function getMarkerColor(activeCases) {
-    if (activeCases === 0) {
+function getMarkerColor(totalOpened) {
+    const bucket = getOpenedCaseBucket(totalOpened);
+    if (bucket === 0) {
         return CONFIG.colors.green;
     }
-    if (activeCases <= 2) {
+    if (bucket === 1) {
         return CONFIG.colors.yellow;
     }
-    if (activeCases <= 5) {
+    if (bucket === 2) {
         return CONFIG.colors.orange;
     }
     return CONFIG.colors.red;
@@ -151,7 +149,7 @@ function getMarkerColor(activeCases) {
 
 function getMarkerRadius(totalOpened) {
     const bucket = getOpenedCaseBucket(totalOpened);
-    return [11, 13, 15, 17, 19][bucket];
+    return [12, 14, 16, 18][bucket];
 }
 
 function getMarkerLabelClass(totalOpened) {
@@ -326,7 +324,7 @@ function addFacilityMarkers(facilities) {
             return;
         }
 
-        const color = getMarkerColor(activeCases);
+        const color = getMarkerColor(totalOpened);
         const radius = getMarkerRadius(totalOpened);
         const defaultStyle = {
             radius,
