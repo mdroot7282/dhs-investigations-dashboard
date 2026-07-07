@@ -29,7 +29,6 @@ const detailsEl = document.getElementById("details");
 const presentationFacilityNameEl = document.getElementById("presentationFacilityName");
 const presentationCityEl = document.getElementById("presentationCity");
 const presentationLastUpdatedEl = document.getElementById("presentationLastUpdated");
-const presentationTotalAllegationsEl = document.getElementById("presentationTotalAllegations");
 const presentationTotalOpenedEl = document.getElementById("presentationTotalOpened");
 const presentationBatteryCasesEl = document.getElementById("presentationBatteryCases");
 const presentationSexualMisconductCasesEl = document.getElementById("presentationSexualMisconductCases");
@@ -56,18 +55,87 @@ if (resetViewButton) {
 }
 
 const kpiElements = {
-    totalAllegations: document.getElementById("totalAllegations"),
     totalOpened: document.getElementById("totalOpened"),
     batteryCases: document.getElementById("batteryCases"),
     sexualMisconductCases: document.getElementById("sexualMisconductCases"),
-    convictions: document.getElementById("convictions"),
-    activeCases: document.getElementById("activeCases"),
-    dismissed: document.getElementById("dismissedCases")
+    activeCases: document.getElementById("activeCases")
 };
 
 function parseNumber(value) {
     const number = Number(value);
     return Number.isFinite(number) ? number : 0;
+}
+
+function parseCameraCsv(csvText) {
+    const cameraLookup = {};
+    if (!csvText) {
+        return cameraLookup;
+    }
+
+    const lines = csvText
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0);
+
+    if (lines.length <= 1) {
+        return cameraLookup;
+    }
+
+    for (let i = 1; i < lines.length; i += 1) {
+        const rawLine = lines[i];
+        const cols = rawLine.split(",");
+        if (cols.length < 2) {
+            continue;
+        }
+
+        const title = cols[0].trim();
+        const camera = cols.slice(1).join(",").trim();
+        if (!title) {
+            continue;
+        }
+
+        cameraLookup[title] = camera;
+    }
+
+    return cameraLookup;
+}
+
+function getCameraState(cameraValue) {
+    const normalized = String(cameraValue || "").trim().toLowerCase();
+    if (normalized === "yes") {
+        return "yes";
+    }
+    if (normalized === "no") {
+        return "no";
+    }
+    return "unknown";
+}
+
+function getCameraIconHtml(cameraValue) {
+    const state = getCameraState(cameraValue);
+    if (state === "yes") {
+        return '<i class="fa-solid fa-video facilityCameraIcon" aria-hidden="true"></i>';
+    }
+    if (state === "no") {
+        return '<i class="fa-solid fa-video-slash facilityCameraIcon" aria-hidden="true"></i>';
+    }
+    return "";
+}
+
+function getOpenedCaseBucket(totalOpened) {
+    if (totalOpened <= 4) {
+        return 0;
+    }
+    if (totalOpened <= 9) {
+        return 1;
+    }
+    if (totalOpened <= 14) {
+        return 2;
+    }
+    if (totalOpened <= 19) {
+        return 3;
+    }
+    return 4;
 }
 
 function getMarkerColor(activeCases) {
@@ -83,6 +151,16 @@ function getMarkerColor(activeCases) {
     return CONFIG.colors.red;
 }
 
+function getMarkerRadius(totalOpened) {
+    const bucket = getOpenedCaseBucket(totalOpened);
+    return [11, 13, 15, 17, 19][bucket];
+}
+
+function getMarkerLabelClass(totalOpened) {
+    const bucket = getOpenedCaseBucket(totalOpened);
+    return `markerValue markerValue${bucket}`;
+}
+
 function getFacilityStats(facility) {
     return [
         { label: "Total Allegations", value: facility["Total Allegations"] },
@@ -92,55 +170,65 @@ function getFacilityStats(facility) {
         { label: "Convictions", value: facility.Convictions },
         { label: "Dismissed", value: facility.Dismissed },
         { label: "Active Cases", value: facility["Active Cases"] },
-        { label: "Last Updated", value: facility["Last Updated"] }
+        { label: "Last Updated", value: formatDateOnly(facility["Last Updated"]) }
     ];
 }
 
 function formatDateOnly(value) {
     if (value === undefined || value === null || value === "") {
-        return "";
+        return "--";
     }
 
     const textValue = String(value).trim();
-    const isoDateMatch = textValue.match(/^(\d{4}-\d{2}-\d{2})/);
-    if (isoDateMatch) {
-        return isoDateMatch[1];
-    }
-
-    const parsedDate = new Date(textValue);
-    if (Number.isNaN(parsedDate.getTime())) {
-        return textValue;
-    }
-
-    const year = parsedDate.getFullYear();
-    const month = String(parsedDate.getMonth() + 1).padStart(2, "0");
-    const day = String(parsedDate.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    const datePart = textValue.split("T")[0].trim();
+    return datePart || "--";
 }
 
 function getFacilityPanelStats(facility) {
-    return getFacilityStats(facility).map((stat) => (
-        stat.label === "Last Updated"
-            ? { ...stat, value: formatDateOnly(stat.value) }
-            : stat
-    ));
+    return [
+        { label: "City", value: facility.City },
+        { label: "Investigation Statistics", value: "", section: true },
+        { label: "Active Cases", value: facility["Active Cases"], colorClass: "metricActive" },
+        { label: "Total Cases Opened", value: facility["Total Cases Opened"], colorClass: "metricOpened" },
+        { label: "Battery Cases", value: facility["Battery Cases"], colorClass: "metricBattery" },
+        { label: "Sexual Misconduct Cases", value: facility["Sexual Misconduct Cases"], colorClass: "metricSexual" },
+        { label: "Convictions", value: facility.Convictions, colorClass: "metricConvictions" },
+        { label: "Dismissed", value: facility.Dismissed, colorClass: "metricDismissed" },
+        { label: "Last Updated", value: formatDateOnly(facility["Last Updated"]), muted: true }
+    ];
 }
 
 function formatFacilityInfo(facility) {
     const statisticsHtml = getFacilityPanelStats(facility)
-        .map((stat) => `<div class="detailsRow"><span class="detailsLabel">${stat.label}:</span><span>${stat.value}</span></div>`)
+        .map((stat) => {
+            if (stat.section) {
+                return `<div class="detailsRow detailsRowSection"><span>${stat.label}</span></div>`;
+            }
+
+            const rowClasses = ["detailsRow", "detailsRowMetric"];
+            if (stat.colorClass) {
+                rowClasses.push(stat.colorClass);
+            }
+            if (stat.muted) {
+                rowClasses.push("detailsRowMuted");
+            }
+            return `<div class="${rowClasses.join(" ")}"><span class="detailsLabel">${stat.label}</span><span>${stat.value}</span></div>`;
+        })
         .join("");
 
+    const cameraIconHtml = getCameraIconHtml(facility.Camera);
     return `
-        <div class="detailsRow"><span>${facility.Title}</span></div>
-        <div class="detailsRow"><span class="detailsLabel">Address:</span><span>${facility.Address}</span></div>
+        <div class="detailsRow detailsRowName"><span class="facilityTitleWithCamera">${facility.Title}${cameraIconHtml}</span></div>
         ${statisticsHtml}
     `;
 }
 
 function getPopupHtml(facility) {
     const statisticsHtml = getFacilityStats(facility)
-        .map((stat) => `<div><strong>${stat.label}:</strong> ${stat.value}</div>`)
+        .map((stat) => {
+            const value = stat.label === "Last Updated" ? formatDateOnly(stat.value) : stat.value;
+            return `<div><strong>${stat.label}:</strong> ${value}</div>`;
+        })
         .join("");
 
     return `
@@ -158,33 +246,22 @@ const facilityMarkers = new Map();
 
 function updateKpis(facilities) {
     const totals = facilities.reduce((acc, facility) => {
-        acc.totalAllegations += parseNumber(facility["Total Allegations"]);
         acc.totalOpened += parseNumber(facility["Total Cases Opened"]);
         acc.batteryCases += parseNumber(facility["Battery Cases"]);
         acc.sexualMisconductCases += parseNumber(facility["Sexual Misconduct Cases"]);
-        acc.convictions += parseNumber(facility.Convictions);
         acc.activeCases += parseNumber(facility["Active Cases"]);
-        acc.dismissed += parseNumber(facility.Dismissed);
         return acc;
     }, {
-        totalAllegations: 0,
         totalOpened: 0,
         batteryCases: 0,
         sexualMisconductCases: 0,
-        convictions: 0,
-        activeCases: 0,
-        dismissed: 0
+        activeCases: 0
     });
 
-    kpiElements.totalAllegations.textContent = totals.totalAllegations.toLocaleString();
     kpiElements.totalOpened.textContent = totals.totalOpened.toLocaleString();
     kpiElements.batteryCases.textContent = totals.batteryCases.toLocaleString();
     kpiElements.sexualMisconductCases.textContent = totals.sexualMisconductCases.toLocaleString();
-    kpiElements.convictions.textContent = totals.convictions.toLocaleString();
     kpiElements.activeCases.textContent = totals.activeCases.toLocaleString();
-    if (kpiElements.dismissed) {
-        kpiElements.dismissed.textContent = totals.dismissed.toLocaleString();
-    }
 }
 
 function updateFooter(facilityCount) {
@@ -249,6 +326,7 @@ function addFacilityMarkers(facilities) {
     facilities.forEach((facility) => {
         const latitude = parseNumber(facility.Latitude);
         const longitude = parseNumber(facility.Longitude);
+        const totalOpened = parseNumber(facility["Total Cases Opened"]);
         const activeCases = parseNumber(facility["Active Cases"]);
 
         if (!latitude || !longitude) {
@@ -256,8 +334,9 @@ function addFacilityMarkers(facilities) {
         }
 
         const color = getMarkerColor(activeCases);
+        const radius = getMarkerRadius(totalOpened);
         const defaultStyle = {
-            radius: 10,
+            radius,
             fillColor: color,
             color: "#333",
             weight: 1,
@@ -272,6 +351,14 @@ function addFacilityMarkers(facilities) {
             minWidth: 260,
             maxWidth: 380,
             ...getPopupPanOptions()
+        });
+
+        marker.bindTooltip(String(activeCases), {
+            permanent: true,
+            direction: "center",
+            className: getMarkerLabelClass(totalOpened),
+            opacity: 1,
+            interactive: false
         });
 
         marker.on("click", () => {
@@ -325,7 +412,7 @@ function selectFacility(facility, options = {}) {
 
     const selectedStroke = getComputedStyle(document.body).getPropertyValue('--selected-marker-stroke').trim() || '#14213d';
     marker.setStyle({
-        radius: 13,
+        radius: marker.defaultStyle.radius + 2,
         fillColor: marker.defaultStyle.fillColor,
         color: selectedStroke,
         weight: 3,
@@ -364,15 +451,15 @@ function selectFacility(facility, options = {}) {
 }
 
 function updateDetails(facility) {
+    detailsEl.classList.add("detailsV4");
     detailsEl.innerHTML = formatFacilityInfo(facility);
 }
 
 function updatePresentationDetails(facility) {
       if (!presentationFacilityNameEl) return;
     if (!facility) {
-    presentationFacilityNameEl.textContent = "";
+        presentationFacilityNameEl.innerHTML = "";
     presentationCityEl.textContent = "";
-    presentationTotalAllegationsEl.textContent = "";
     presentationTotalOpenedEl.textContent = "";
     presentationBatteryCasesEl.textContent = "";
     presentationSexualMisconductCasesEl.textContent = "";
@@ -384,16 +471,14 @@ function updatePresentationDetails(facility) {
 }
 
 
-    presentationFacilityNameEl.textContent = facility ? facility.Title : "";
+    presentationFacilityNameEl.innerHTML = facility ? `${facility.Title}${getCameraIconHtml(facility.Camera)}` : "";
     presentationCityEl.textContent = facility ? facility.City : "";
-    presentationTotalAllegationsEl.textContent = facility ? parseNumber(facility["Total Allegations"]).toLocaleString() : "";
+    presentationActiveCasesEl.textContent = facility ? parseNumber(facility["Active Cases"]).toLocaleString() : "";
     presentationTotalOpenedEl.textContent = facility ? parseNumber(facility["Total Cases Opened"]).toLocaleString() : "";
     presentationBatteryCasesEl.textContent = facility ? parseNumber(facility["Battery Cases"]).toLocaleString() : "";
     presentationSexualMisconductCasesEl.textContent = facility ? parseNumber(facility["Sexual Misconduct Cases"]).toLocaleString() : "";
     presentationConvictionsEl.textContent = facility ? parseNumber(facility.Convictions).toLocaleString() : "";
     presentationDismissedEl.textContent = facility ? parseNumber(facility.Dismissed).toLocaleString() : "";
-    console.log("Dismissed:", facility.Dismissed, presentationDismissedEl.textContent);
-    presentationActiveCasesEl.textContent = facility ? parseNumber(facility["Active Cases"]).toLocaleString() : "";
     presentationLastUpdatedEl.textContent = facility ? formatDateOnly(facility["Last Updated"]) : "";
 }
 
@@ -518,6 +603,30 @@ fetch("facilities.json")
         }
 
         facilitiesData = data;
+
+        return fetch("camera.csv")
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Unable to load camera.csv");
+                }
+                return response.text();
+            })
+            .then((csvText) => {
+                const cameraLookup = parseCameraCsv(csvText);
+                facilitiesData = facilitiesData.map((facility) => ({
+                    ...facility,
+                    Camera: cameraLookup[facility.Title] || "Unknown"
+                }));
+            })
+            .catch((error) => {
+                console.warn(error);
+                facilitiesData = facilitiesData.map((facility) => ({
+                    ...facility,
+                    Camera: "Unknown"
+                }));
+            });
+    })
+    .then(() => {
         updateKpis(facilitiesData);
         addFacilityMarkers(facilitiesData);
         updateFooter(facilitiesData.length);

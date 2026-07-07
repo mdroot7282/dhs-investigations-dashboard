@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DHS Investigative Statistics 2021-Present</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css?v=4.2">
-    <link rel="stylesheet" href="theme.css?v=4.2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="stylesheet" href="style.css?v=4.4">
+    <link rel="stylesheet" href="theme.css?v=4.3">
 </head>
 
 <body>
@@ -57,54 +58,29 @@
     </header>
 
     <section id="kpiRow">
-        <div class="kpiCard kpiCardBlue">
+        <div class="kpiCard kpiCardRed">
             <div class="kpiRowTop">
-                <span class="kpiIcon kpiIconBlue" aria-hidden="true"></span>
-                <div class="kpiTitle">Total Allegations</div>
+                <div class="kpiTitle">Active Cases</div>
             </div>
-            <div class="kpiValue" id="totalAllegations">0</div>
+            <div class="kpiValue" id="activeCases">0</div>
         </div>
         <div class="kpiCard kpiCardDarkBlue">
             <div class="kpiRowTop">
-                <span class="kpiIcon kpiIconDarkBlue" aria-hidden="true"></span>
                 <div class="kpiTitle">Total Cases Opened</div>
             </div>
             <div class="kpiValue" id="totalOpened">0</div>
         </div>
         <div class="kpiCard kpiCardOrange">
             <div class="kpiRowTop">
-                <span class="kpiIcon kpiIconOrange" aria-hidden="true"></span>
                 <div class="kpiTitle">Battery Cases</div>
             </div>
             <div class="kpiValue" id="batteryCases">0</div>
         </div>
         <div class="kpiCard kpiCardPurple">
             <div class="kpiRowTop">
-                <span class="kpiIcon kpiIconPurple" aria-hidden="true"></span>
                 <div class="kpiTitle">Sexual Misconduct Cases</div>
             </div>
             <div class="kpiValue" id="sexualMisconductCases">0</div>
-        </div>
-        <div class="kpiCard kpiCardGreen">
-            <div class="kpiRowTop">
-                <span class="kpiIcon kpiIconGreen" aria-hidden="true"></span>
-                <div class="kpiTitle">Convictions</div>
-            </div>
-            <div class="kpiValue" id="convictions">0</div>
-        </div>
-        <div class="kpiCard kpiCardGray">
-            <div class="kpiRowTop">
-                <span class="kpiIcon kpiIconGray" aria-hidden="true"></span>
-                <div class="kpiTitle">Dismissed</div>
-            </div>
-            <div class="kpiValue" id="dismissedCases">0</div>
-        </div>
-        <div class="kpiCard kpiCardRed">
-            <div class="kpiRowTop">
-                <span class="kpiIcon kpiIconRed" aria-hidden="true"></span>
-                <div class="kpiTitle">Active Cases</div>
-            </div>
-            <div class="kpiValue" id="activeCases">0</div>
         </div>
     </section>
 
@@ -125,6 +101,9 @@
                 <div><span class="legendSwatch yellow"></span>1–2 Active Cases</div>
                 <div><span class="legendSwatch orange"></span>3–5 Active Cases</div>
                 <div><span class="legendSwatch red"></span>6+ Active Cases</div>
+                <h4 class="legendSubheading">Surveillance Cameras</h4>
+                <div><i class="fa-solid fa-video legendCameraIcon" aria-hidden="true"></i>Camera System Present</div>
+                <div><i class="fa-solid fa-video-slash legendCameraIcon" aria-hidden="true"></i>No Camera System</div>
             </div>
         </section>
 
@@ -144,38 +123,34 @@
                     </div>
                     <div class="presentationSectionTitle">INVESTIGATION STATISTICS</div>
                     <div class="presentationStats">
-                        <div class="presentationStatCard presentationStatCardBlue">
-                            <span class="presentationStatLabel">Total Allegations</span>
-                            <span class="presentationStatValue" id="presentationTotalAllegations"></span>
+                        <div class="presentationStatCard facility-stat-row presentationStatCardRed">
+                            <span class="presentationStatLabel facility-stat-label">Active Cases</span>
+                            <span class="presentationStatValue facility-stat-value" id="presentationActiveCases"></span>
                         </div>
-                        <div class="presentationStatCard presentationStatCardDarkBlue">
-                            <span class="presentationStatLabel">Cases Opened</span>
-                            <span class="presentationStatValue" id="presentationTotalOpened"></span>
+                        <div class="presentationStatCard facility-stat-row presentationStatCardDarkBlue">
+                            <span class="presentationStatLabel facility-stat-label">Cases Opened</span>
+                            <span class="presentationStatValue facility-stat-value" id="presentationTotalOpened"></span>
                         </div>
-                        <div class="presentationStatCard presentationStatCardOrange">
-                            <span class="presentationStatLabel">Battery Cases</span>
-                            <span class="presentationStatValue" id="presentationBatteryCases"></span>
+                        <div class="presentationStatCard facility-stat-row presentationStatCardOrange">
+                            <span class="presentationStatLabel facility-stat-label">Battery Cases</span>
+                            <span class="presentationStatValue facility-stat-value" id="presentationBatteryCases"></span>
                         </div>
-                        <div class="presentationStatCard presentationStatCardPurple">
-                            <span class="presentationStatLabel">Sexual Misconduct Cases</span>
-                            <span class="presentationStatValue" id="presentationSexualMisconductCases"></span>
+                        <div class="presentationStatCard facility-stat-row presentationStatCardPurple">
+                            <span class="presentationStatLabel facility-stat-label">Sexual Misconduct Cases</span>
+                            <span class="presentationStatValue facility-stat-value" id="presentationSexualMisconductCases"></span>
                         </div>
-                        <div class="presentationStatCard presentationStatCardGreen">
-                            <span class="presentationStatLabel">Convictions</span>
-                            <span class="presentationStatValue" id="presentationConvictions"></span>
+                        <div class="presentationStatCard facility-stat-row presentationStatCardGreen">
+                            <span class="presentationStatLabel facility-stat-label">Convictions</span>
+                            <span class="presentationStatValue facility-stat-value" id="presentationConvictions"></span>
                         </div>
-                        <div class="presentationStatCard presentationStatCardGray">
-                            <span class="presentationStatLabel">Dismissed</span>
-                            <span class="presentationStatValue" id="presentationDismissed"></span>
-                        </div>
-                        <div class="presentationStatCard presentationStatCardRed">
-                            <span class="presentationStatLabel">Active Cases</span>
-                            <span class="presentationStatValue" id="presentationActiveCases"></span>
+                        <div class="presentationStatCard facility-stat-row presentationStatCardGray">
+                            <span class="presentationStatLabel facility-stat-label">Dismissed</span>
+                            <span class="presentationStatValue facility-stat-value" id="presentationDismissed"></span>
                         </div>
                     </div>
-                    <div class="presentationFooter">
-                        <span class="presentationFooterLabel">Last Updated</span>
-                        <span class="presentationFooterValue" id="presentationLastUpdated"></span>
+                    <div class="presentationFooter facility-stat-row facility-stat-rowFooter">
+                        <span class="presentationFooterLabel facility-stat-label"><i class="fa-solid fa-calendar-day presentationFooterIcon" aria-hidden="true"></i>Last Updated</span>
+                        <span class="presentationFooterValue facility-stat-value" id="presentationLastUpdated"></span>
                     </div>
                 </div>
             </div>
@@ -188,9 +163,9 @@
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="config.js?v=4.2"></script>
-    <script src="facilitySearch.js?v=4.2"></script>
-    <script src="app.js?v=4.2"></script>
+    <script src="config.js?v=4.4"></script>
+    <script src="facilitySearch.js?v=4.4"></script>
+    <script src="app.js?v=4.4"></script>
 </body>
 
 </html>
