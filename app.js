@@ -66,12 +66,14 @@ function resetMapToIllinois() {
         return;
     }
 
+    map.invalidateSize();
+
     map.fitBounds(illinoisBoundaryLayer.getBounds(), {
         paddingTopLeft: [5, 5],
         paddingBottomRight: [5, 5],
-        maxZoom: 7
+        maxZoom: 7,
+        animate: false
     });
-    map.invalidateSize();
 }
 
 function resetPresentationMapView() {
