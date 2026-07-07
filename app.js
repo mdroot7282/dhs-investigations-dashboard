@@ -189,6 +189,37 @@ function parseNumber(value) {
     return Number.isFinite(number) ? number : 0;
 }
 
+async function loadFacilitiesData() {
+    const response = await fetch("facilities.json");
+    if (!response.ok) {
+        throw new Error("Unable to load facilities.json");
+    }
+
+    const facilities = await response.json();
+    return Array.isArray(facilities) ? facilities : [];
+}
+
+async function applyCameraMetadata(facilities) {
+    let cameraLookup = {};
+
+    try {
+        const response = await fetch("camera.csv");
+        if (!response.ok) {
+            throw new Error("Unable to load camera.csv");
+        }
+
+        const csvText = await response.text();
+        cameraLookup = parseCameraCsv(csvText);
+    } catch (error) {
+        console.warn(error);
+    }
+
+    return facilities.map((facility) => ({
+        ...facility,
+        Camera: cameraLookup[facility.Title] || "Unknown"
+    }));
+}
+
 function parseCameraCsv(csvText) {
     const cameraLookup = {};
     if (!csvText) {
@@ -239,9 +270,6 @@ function getCameraIconHtml(cameraValue) {
     if (state === "yes") {
         return '<i class="fa-solid fa-video facilityCameraIcon" aria-hidden="true"></i>';
     }
-    if (state === "no") {
-        return '<i class="fa-solid fa-video-slash facilityCameraIcon" aria-hidden="true"></i>';
-    }
     return "";
 }
 
@@ -263,16 +291,6 @@ function getOpenedCaseBucket(totalOpened) {
 }
 
 function getMarkerColor(totalOpened) {
-    const bucket = getOpenedCaseBucket(totalOpened);
-    if (bucket === 0) {
-        return CONFIG.colors.green;
-    }
-    if (bucket === 1) {
-        return CONFIG.colors.yellow;
-    }
-    if (bucket === 2) {
-        return CONFIG.colors.orange;
-    }
     return CONFIG.colors.red;
 }
 
@@ -292,15 +310,13 @@ function getMarkerTooltipHtml(facility, activeCases, cameraValue) {
     }
 
     const cameraState = getCameraState(cameraValue);
-    let cameraIconClass = "fa-video-slash";
-
-    if (cameraState === "yes") {
-        cameraIconClass = "fa-video";
+    if (cameraState !== "yes") {
+        return `<span class="markerNumber">${activeCases}</span>`;
     }
 
     return `
         <span class="markerCameraWrap" aria-hidden="true">
-            <i class="fa-solid ${cameraIconClass} markerCameraIcon"></i>
+            <i class="fa-solid fa-video markerCameraIcon"></i>
         </span>
         <span class="markerNumber">${activeCases}</span>
     `;
@@ -321,13 +337,15 @@ function getPopupCameraMeta(cameraValue) {
     if (cameraState === "yes") {
         return {
             iconClass: "fa-video",
-            statusText: "Present"
+            statusText: "Present",
+            showCamera: true
         };
     }
 
     return {
-        iconClass: "fa-video-slash",
-        statusText: "Not Present"
+        iconClass: "",
+        statusText: "",
+        showCamera: false
     };
 }
 
@@ -383,6 +401,9 @@ function getPopupHtml(facility) {
         ? ""
         : (() => {
             const cameraMeta = getPopupCameraMeta(facility.Camera);
+            if (!cameraMeta.showCamera) {
+                return "";
+            }
             return `<div class="popupCameraStatus"><strong><i class="fa-solid ${cameraMeta.iconClass}" aria-hidden="true"></i> Surveillance Cameras:</strong> ${cameraMeta.statusText}</div>`;
         })();
     const statisticsHtml = getFacilityStats(facility)
@@ -745,41 +766,13 @@ function showInitialMessage() {
     `;
 }
 
-fetch("facilities.json")
-    .then((response) => {
-        if (!response.ok) {
-            throw new Error("Unable to load facilities.json");
-        }
-        return response.json();
+loadFacilitiesData()
+    .then((facilities) => {
+        facilitiesData = facilities;
+        return applyCameraMetadata(facilitiesData);
     })
-    .then((data) => {
-        if (!Array.isArray(data)) {
-            throw new Error("Unexpected facility data format.");
-        }
-
-        facilitiesData = data;
-
-        return fetch("camera.csv")
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Unable to load camera.csv");
-                }
-                return response.text();
-            })
-            .then((csvText) => {
-                const cameraLookup = parseCameraCsv(csvText);
-                facilitiesData = facilitiesData.map((facility) => ({
-                    ...facility,
-                    Camera: cameraLookup[facility.Title] || "Unknown"
-                }));
-            })
-            .catch((error) => {
-                console.warn(error);
-                facilitiesData = facilitiesData.map((facility) => ({
-                    ...facility,
-                    Camera: "Unknown"
-                }));
-            });
+    .then((facilitiesWithCameras) => {
+        facilitiesData = facilitiesWithCameras;
     })
     .then(() => {
         updateKpis(facilitiesData);
@@ -794,7 +787,7 @@ fetch("facilities.json")
         }, 300);
     })
     .catch((error) => {
-        console.error(error);
+        console.error("Unable to load facility data", error);
         detailsEl.innerHTML = `<p class="error">Unable to load facility data.</p>`;
         facilityFooterEl.textContent = "0";
         lastRefreshEl.textContent = "--";

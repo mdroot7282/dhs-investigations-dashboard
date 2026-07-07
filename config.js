@@ -31,7 +31,6 @@ const CONFIG = {
         orange: "#EF6C00",
 
         red: "#C62828"
-
     }
 
 };

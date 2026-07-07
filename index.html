@@ -24,7 +24,7 @@
                 <div class="headerStatusRow">
                     <div class="headerStatusItem">
                         <span class="statusLabel">Data Source:</span>
-                        <span class="statusValue">OPTIC Microsoft List</span>
+                        <span class="statusValue">Local facilities.json</span>
                     </div>
                     <div class="headerStatusItem">
                         <span class="statusLabel">Facilities:</span>
@@ -60,13 +60,13 @@
     <section id="kpiRow">
         <div class="kpiCard kpiCardRed">
             <div class="kpiRowTop">
-                <div class="kpiTitle">Active Cases</div>
+                <div class="kpiTitle">Current Active Cases</div>
             </div>
             <div class="kpiValue" id="activeCases">0</div>
         </div>
         <div class="kpiCard kpiCardDarkBlue">
             <div class="kpiRowTop">
-                <div class="kpiTitle">Total Cases Opened</div>
+                <div class="kpiTitle">Total Cases Opened Since 2021</div>
             </div>
             <div class="kpiValue" id="totalOpened">0</div>
         </div>
@@ -96,24 +96,35 @@
             <button id="resetViewButton" class="mapResetButton" type="button">Reset View</button>
             <div id="map"></div>
             <div id="legend">
-                <h4>Legend</h4>
-                <h4 class="legendSubheading">Total Cases Opened</h4>
-                <div class="legendRange"><span class="legendSwatch green"></span>1-10</div>
-                <div class="legendRange"><span class="legendSwatch yellow"></span>11-20</div>
-                <div class="legendRange"><span class="legendSwatch orange"></span>21-30</div>
-                <div class="legendRange"><span class="legendSwatch red"></span>31+</div>
-                <div class="legendDivider" aria-hidden="true"></div>
-                <div class="legendGuide" role="note" aria-label="Marker guide">
-                    <h5>Marker Guide</h5>
-                    <div>🔢 Number = Active Cases</div>
-                    <div>📍 Size = Total Cases Opened</div>
-                    <div>🎨 Color = Total Cases Opened</div>
+                <h4>Marker Size Guide</h4>
+                <h4 class="legendSubheading">Marker Size = Total Cases Opened Since 2021</h4>
+                <div class="legendRange">
+                    <span class="legendPin legendPinSm" aria-hidden="true"></span>
+                    <div class="legendRangeText">
+                        <div class="legendRangeLabel">Small Marker (1-10 Cases Opened)</div>
+                        <div class="legendRangeDesc">Represents facilities with low investigative activity.</div>
+                    </div>
                 </div>
-                <div class="legendDivider" aria-hidden="true"></div>
-                <div class="legendGuide legendCameraGuide" role="note" aria-label="Camera guide">
-                    <h5>Camera Guide</h5>
-                    <div><i class="fa-solid fa-video legendCameraIcon" aria-hidden="true"></i>Camera Present</div>
-                    <div><i class="fa-solid fa-video-slash legendCameraIcon" aria-hidden="true"></i>No Camera Present</div>
+                <div class="legendRange">
+                    <span class="legendPin legendPinMd" aria-hidden="true"></span>
+                    <div class="legendRangeText">
+                        <div class="legendRangeLabel">Medium Marker (11-20 Cases Opened)</div>
+                        <div class="legendRangeDesc">Represents facilities with moderate investigative activity.</div>
+                    </div>
+                </div>
+                <div class="legendRange">
+                    <span class="legendPin legendPinLg" aria-hidden="true"></span>
+                    <div class="legendRangeText">
+                        <div class="legendRangeLabel">Large Marker (21-30 Cases Opened)</div>
+                        <div class="legendRangeDesc">Represents facilities with high investigative activity.</div>
+                    </div>
+                </div>
+                <div class="legendRange">
+                    <span class="legendPin legendPinXl" aria-hidden="true"></span>
+                    <div class="legendRangeText">
+                        <div class="legendRangeLabel">Extra Large Marker (31+ Cases Opened)</div>
+                        <div class="legendRangeDesc">Represents facilities with the highest investigative activity.</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -166,9 +177,9 @@
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script src="config.js?v=4.4"></script>
+    <script src="config.js?v=4.5"></script>
     <script src="facilitySearch.js?v=4.4"></script>
-    <script src="app.js?v=4.4"></script>
+    <script src="app.js?v=6"></script>
 </body>
 
 </html>
