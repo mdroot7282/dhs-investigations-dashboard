@@ -15,6 +15,7 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 
 const ILLINOIS_STATES_GEOJSON_URL = "https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json";
+const FACILITY_WITHOUT_CAMERA_DISPLAY = "Illinois Center for Rehabilitation and Education";
 let illinoisBoundaryLayer = null;
 let isIllinoisBoundaryReady = false;
 let areFacilityMarkersReady = false;
@@ -244,6 +245,10 @@ function getCameraIconHtml(cameraValue) {
     return "";
 }
 
+function shouldHideCameraDisplay(facility) {
+    return facility && facility.Title === FACILITY_WITHOUT_CAMERA_DISPLAY;
+}
+
 function getOpenedCaseBucket(totalOpened) {
     if (totalOpened <= 10) {
         return 0;
@@ -281,7 +286,11 @@ function getMarkerLabelClass(totalOpened) {
     return `markerValue markerValue${bucket}`;
 }
 
-function getMarkerTooltipHtml(activeCases, cameraValue) {
+function getMarkerTooltipHtml(facility, activeCases, cameraValue) {
+    if (shouldHideCameraDisplay(facility)) {
+        return `<span class="markerNumber">${activeCases}</span>`;
+    }
+
     const cameraState = getCameraState(cameraValue);
     let cameraIconClass = "fa-video-slash";
 
@@ -362,7 +371,7 @@ function formatFacilityInfo(facility) {
         })
         .join("");
 
-    const cameraIconHtml = getCameraIconHtml(facility.Camera);
+    const cameraIconHtml = shouldHideCameraDisplay(facility) ? "" : getCameraIconHtml(facility.Camera);
     return `
         <div class="detailsRow detailsRowName"><span class="facilityTitleWithCamera">${facility.Title}${cameraIconHtml}</span></div>
         ${statisticsHtml}
@@ -370,7 +379,12 @@ function formatFacilityInfo(facility) {
 }
 
 function getPopupHtml(facility) {
-    const cameraMeta = getPopupCameraMeta(facility.Camera);
+    const cameraStatusHtml = shouldHideCameraDisplay(facility)
+        ? ""
+        : (() => {
+            const cameraMeta = getPopupCameraMeta(facility.Camera);
+            return `<div class="popupCameraStatus"><strong><i class="fa-solid ${cameraMeta.iconClass}" aria-hidden="true"></i> Surveillance Cameras:</strong> ${cameraMeta.statusText}</div>`;
+        })();
     const statisticsHtml = getFacilityStats(facility)
         .map((stat) => {
             return `<div><strong>${stat.label}:</strong> ${stat.value}</div>`;
@@ -379,7 +393,7 @@ function getPopupHtml(facility) {
 
     return `
         <div class="popupTitle">${facility.Title}</div>
-        <div class="popupCameraStatus"><strong><i class="fa-solid ${cameraMeta.iconClass}" aria-hidden="true"></i> Surveillance Cameras:</strong> ${cameraMeta.statusText}</div>
+        ${cameraStatusHtml}
         ${statisticsHtml}
     `;
 }
@@ -498,7 +512,7 @@ function addFacilityMarkers(facilities) {
             ...getPopupPanOptions()
         });
 
-        marker.bindTooltip(getMarkerTooltipHtml(activeCases, facility.Camera), {
+        marker.bindTooltip(getMarkerTooltipHtml(facility, activeCases, facility.Camera), {
             permanent: true,
             direction: "center",
             className: getMarkerLabelClass(totalOpened),
@@ -612,7 +626,9 @@ function updatePresentationDetails(facility) {
 }
 
 
-    presentationFacilityNameEl.innerHTML = facility ? `${facility.Title}${getCameraIconHtml(facility.Camera)}` : "";
+    presentationFacilityNameEl.innerHTML = facility
+        ? `${facility.Title}${shouldHideCameraDisplay(facility) ? "" : getCameraIconHtml(facility.Camera)}`
+        : "";
     presentationCityEl.textContent = facility ? facility.City : "";
     presentationActiveCasesEl.textContent = facility ? parseNumber(facility["Active Cases"]).toLocaleString() : "";
     presentationTotalOpenedEl.textContent = facility ? parseNumber(facility["Total Cases Opened"]).toLocaleString() : "";
