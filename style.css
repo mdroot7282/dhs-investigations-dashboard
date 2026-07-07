@@ -1363,6 +1363,24 @@ body.presentation-mode .presentationFooterLabel::after {
     content: ":";
 }
 
+body.presentation-mode .last-updated-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 16px;
+}
+
+body.presentation-mode .last-updated-row .presentationFooterLabel,
+body.presentation-mode .last-updated-row .last-updated-value {
+    white-space: nowrap;
+}
+
+body.presentation-mode .last-updated-row .last-updated-value {
+    justify-self: end;
+    text-align: right;
+    width: auto;
+    font-size: 1.6rem;
+}
+
 
 body.presentation-mode .searchResults {
     max-height: calc(100vh - 180px);
